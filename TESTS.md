@@ -5,7 +5,7 @@
 |---|---|---|---|
 | Classification logic (urgency/intent, confidence scoring) | Service layer, Claude API faked | unit | written, 9 tests passing (2026-10-04) |
 | Escalation rule (two triggers: sensitive intent, low confidence) | Service layer | unit | written, 5 tests passing including threshold boundary (2026-10-04) |
-| RAG retrieval (does it return the right KB article for a given message) | Service layer, embeddings faked or small real set | unit | not started |
+| Retrieval (does it return the right KB article for a given message) | Service layer, real small fixed article set, no faking needed (deterministic local computation) | unit | written, 4 tests passing (2026-10-04) |
 | Draft generation is grounded in retrieved KB content | Service layer, Claude API faked | unit | not started |
 | Gmail gateway (read label, create draft, apply label) | Repository layer, real Gmail test account | integration | not started |
 | monday.com gateway (create/update item, status transitions) | Repository layer, real monday.com Free account | integration | not started |

@@ -1,0 +1,77 @@
+[
+  {
+    "id": "defect_process",
+    "title": "Defect and Damage Process",
+    "content": "If a part arrives broken, cracked, or defective, start a defect claim within 14 days of delivery. Include photos of the damage and your order number. We offer a replacement or a full refund once the defect is confirmed by our quality team."
+  },
+  {
+    "id": "shipping_policy",
+    "title": "Shipping Policy",
+    "content": "Standard orders ship within 3-5 business days via our freight partners. You will receive a tracking number by email once the order leaves the warehouse. Expedited shipping is available at checkout for an added fee."
+  },
+  {
+    "id": "return_policy",
+    "title": "Return Policy",
+    "content": "Unused, unopened items can be returned within 30 days of delivery for a full refund minus a 10% restocking fee. Custom or made-to-order items are not eligible for return unless defective."
+  },
+  {
+    "id": "lead_times",
+    "title": "Lead Times",
+    "content": "Custom manufacturing lead times run 4-6 weeks depending on order volume and material availability. Standard catalog items typically ship within 3-5 business days of order confirmation."
+  },
+  {
+    "id": "quote_process",
+    "title": "Quote Process",
+    "content": "To request a custom quote, send us your specifications, quantity, and desired material. Quotes are typically returned within 2 business days and are valid for 30 days from issue."
+  },
+  {
+    "id": "bulk_order_discounts",
+    "title": "Bulk Order Discounts",
+    "content": "Orders over 500 units qualify for tiered volume discounts. Contact your account representative or request a quote with the full quantity to see applicable pricing tiers."
+  },
+  {
+    "id": "payment_terms",
+    "title": "Payment Terms",
+    "content": "New accounts are billed on a pro-forma basis (payment before shipment). Established accounts in good standing may qualify for net-30 terms after their first three completed orders."
+  },
+  {
+    "id": "international_shipping",
+    "title": "International Shipping",
+    "content": "We ship to most countries via international freight. Customs duties and import taxes are the responsibility of the recipient and are not included in our quoted prices."
+  },
+  {
+    "id": "rush_order_policy",
+    "title": "Rush Order Policy",
+    "content": "Rush production is available on select items for a 25% surcharge, cutting standard lead time roughly in half. Rush eligibility depends on current production capacity, confirmed at time of order."
+  },
+  {
+    "id": "warranty_policy",
+    "title": "Warranty Policy",
+    "content": "All manufactured parts carry a 1-year warranty against manufacturing defects under normal use. Warranty does not cover damage from misuse, modification, or normal wear."
+  },
+  {
+    "id": "order_cancellation_policy",
+    "title": "Order Cancellation Policy",
+    "content": "Orders can be cancelled free of charge within 24 hours of placement. After production has started, cancellation may incur a fee covering materials and labor already committed."
+  },
+  {
+    "id": "product_customization_options",
+    "title": "Product Customization Options",
+    "content": "Most catalog items can be customized for material, finish, and dimensions within documented tolerances. Custom specifications outside standard tolerances require engineering review before quoting."
+  },
+  {
+    "id": "tracking_and_delivery_issues",
+    "title": "Tracking and Delivery Issues",
+    "content": "If tracking shows no movement for more than 3 business days, or shows delivered but the order was not received, contact support with the order number so we can open a carrier trace."
+  },
+  {
+    "id": "quality_certifications",
+    "title": "Quality Certifications",
+    "content": "Our facility is ISO 9001 certified. Certificates of conformance and material test reports are available on request for any order, typically provided with the shipment paperwork."
+  },
+  {
+    "id": "contact_escalation_policy",
+    "title": "Contact and Escalation Policy",
+    "content": "Standard inquiries are handled within 1 business day. Urgent issues involving safety, damaged shipments, or account billing disputes are escalated directly to a support lead for same-day review."
+  }
+]
