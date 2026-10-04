@@ -98,7 +98,7 @@ fast with a clear message if any are missing.
 | 2 | Classification service | Classifies urgency/intent with a confidence score, tested against a labeled synthetic set, accuracy reported honestly | None (corrected 2026-10-04: does not need the Gmail gateway, only a message) | partly done: validation/clamping rules built and unit-tested (9 tests, fake gateway), real-accuracy-on-labeled-set check still needs a real ANTHROPIC_API_KEY, not run yet |
 | 3 | Escalation rule | Both triggers (sensitive intent, low confidence) route correctly; unit tests cover both plus the pass-through case | 2 | done, 5 unit tests passing including the threshold boundary (2026-10-04) |
 | 4 | KB + RAG retrieval | Given a message, retrieval returns the right mock KB article(s) | None | done, 4 unit tests passing, 15-article KB written (2026-10-04) |
-| 5 | Draft generation | A real Gmail draft is created, grounded in the retrieved KB content | 1, 4 | not started |
+| 5 | Draft generation | A real Gmail draft is created, grounded in the retrieved KB content | 1, 4 | partly done: grounded draft-text generation built and unit-tested (5 tests), still needs slice 1 (Gmail gateway) to actually create the draft object in Gmail (2026-10-04) |
 | 6 | monday.com gateway | Items created/updated correctly reflecting each message's state | None | not started |
 | 7 | Closed-loop sent-detection | Manually sending a test draft updates its monday.com item within one poll cycle | 1, 6 | not started |
 | 8 | Setup script | Running it populates the Gmail account with ~15-20 synthetic test messages from empty | 1 | not started |
