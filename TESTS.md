@@ -3,7 +3,7 @@
 ## Test plan
 | What is tested | Where (seam) | How | Status |
 |---|---|---|---|
-| Classification logic (urgency/intent, confidence scoring) | Service layer, Claude API faked | unit | not started |
+| Classification logic (urgency/intent, confidence scoring) | Service layer, Claude API faked | unit | written, 9 tests passing (2026-10-04) |
 | Escalation rule (two triggers: sensitive intent, low confidence) | Service layer | unit | not started |
 | RAG retrieval (does it return the right KB article for a given message) | Service layer, embeddings faked or small real set | unit | not started |
 | Draft generation is grounded in retrieved KB content | Service layer, Claude API faked | unit | not started |
