@@ -90,6 +90,7 @@ fast with a clear message if any are missing.
 | A human edits a draft heavily before sending | Closed-loop detection only checks whether the draft ID still exists, not its content, so edits don't break tracking |
 | Synthetic test messages accidentally resemble something identifiable | Reviewed before the setup script sends them; clearly fictional company and product names only |
 | A message gets reprocessed on the next poll (already classified) | Dedupe check against the monday.com board before reclassifying |
+| monday.com Pro trial expires mid-build or before the case study ships | Time-boxed: finish the monday.com-dependent slices and record the Loom + screenshots before the trial locks, do not depend on a live link afterward (see DECISIONS.md #4c) |
 
 ## Slices
 | # | Title | Done when | Blocked by | Status |
