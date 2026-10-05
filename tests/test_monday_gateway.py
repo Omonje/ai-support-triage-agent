@@ -1,0 +1,102 @@
+import json
+
+import pytest
+
+from app.errors import GatewayError
+from app.gateways.monday_gateway import MondayGateway, TriageRecord
+
+
+class _FakeResponse:
+    def __init__(self, payload):
+        self._payload = payload
+
+    def json(self):
+        return self._payload
+
+
+class _FakeHttpPost:
+    def __init__(self, response_payload=None, exc=None):
+        self._response_payload = response_payload
+        self._exc = exc
+        self.calls = []
+
+    def __call__(self, url, headers, json):
+        self.calls.append({"url": url, "headers": headers, "json": json})
+        if self._exc:
+            raise self._exc
+        return _FakeResponse(self._response_payload)
+
+
+def _record(**overrides):
+    defaults = dict(
+        gmail_message_id="m1",
+        item_name="Broken part - customer@example.com",
+        status="Draft Ready for Approval",
+        intent="defect_complaint",
+        urgency="high",
+        confidence=0.92,
+        kb_articles_used="defect_process",
+        reasoning="customer reports a cracked part",
+        processed_at="2026-10-05",
+        gmail_draft_id="draft_1",
+    )
+    defaults.update(overrides)
+    return TriageRecord(**defaults)
+
+
+def test_create_item_returns_the_new_item_id():
+    http_post = _FakeHttpPost(response_payload={"data": {"create_item": {"id": "item_1"}}})
+    gateway = MondayGateway(http_post=http_post, api_token="token", board_id="18433915127")
+
+    item_id = gateway.create_item(_record())
+
+    assert item_id == "item_1"
+    assert http_post.calls[0]["headers"]["Authorization"] == "token"
+
+
+def test_create_item_sends_expected_column_values():
+    http_post = _FakeHttpPost(response_payload={"data": {"create_item": {"id": "item_1"}}})
+    gateway = MondayGateway(http_post=http_post, api_token="token", board_id="18433915127")
+
+    gateway.create_item(_record())
+
+    variables = http_post.calls[0]["json"]["variables"]
+    column_values = json.loads(variables["columnValues"])
+    assert column_values["color_mm7tjn17"] == {"label": "Draft Ready for Approval"}
+    assert column_values["numeric_mm7tgk70"] == 0.92
+    assert column_values["text_mm7tn406"] == "m1"
+
+
+def test_create_item_raises_gateway_error_on_api_errors_field():
+    http_post = _FakeHttpPost(response_payload={"errors": [{"message": "board not found"}]})
+    gateway = MondayGateway(http_post=http_post, api_token="token", board_id="bad_id")
+
+    with pytest.raises(GatewayError):
+        gateway.create_item(_record())
+
+
+def test_create_item_raises_gateway_error_on_transport_failure():
+    http_post = _FakeHttpPost(exc=RuntimeError("timeout"))
+    gateway = MondayGateway(http_post=http_post, api_token="token", board_id="18433915127")
+
+    with pytest.raises(GatewayError):
+        gateway.create_item(_record())
+
+
+def test_update_item_status_sends_the_new_status_label():
+    http_post = _FakeHttpPost(response_payload={"data": {"change_multiple_column_values": {"id": "item_1"}}})
+    gateway = MondayGateway(http_post=http_post, api_token="token", board_id="18433915127")
+
+    gateway.update_item_status("item_1", "Sent")
+
+    variables = http_post.calls[0]["json"]["variables"]
+    column_values = json.loads(variables["columnValues"])
+    assert column_values["color_mm7tjn17"] == {"label": "Sent"}
+
+
+def test_update_item_status_raises_gateway_error_on_failure():
+    http_post = _FakeHttpPost(exc=RuntimeError("down"))
+    gateway = MondayGateway(http_post=http_post, api_token="token", board_id="18433915127")
+
+    with pytest.raises(GatewayError):
+        gateway.update_item_status("item_1", "Sent")

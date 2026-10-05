@@ -89,7 +89,7 @@ fast with a clear message if any are missing.
 | Gmail OAuth token expires | Refresh-token handling built in; re-auth steps written in RUNBOOK.md |
 | A human edits a draft heavily before sending | Closed-loop detection only checks whether the draft ID still exists, not its content, so edits don't break tracking |
 | Synthetic test messages accidentally resemble something identifiable | Reviewed before the setup script sends them; clearly fictional company and product names only |
-| A message gets reprocessed on the next poll (already classified) | Dedupe check against the monday.com board before reclassifying |
+| A message gets reprocessed on the next poll (already classified) | Corrected 2026-10-05: handled entirely by Gmail's own Processed label (slice 1's `list_new_message_ids` already excludes it), not a monday.com-side check |
 | monday.com Pro trial expires mid-build or before the case study ships | Time-boxed: finish the monday.com-dependent slices and record the Loom + screenshots before the trial locks, do not depend on a live link afterward (see DECISIONS.md #4c) |
 
 ## Slices
@@ -100,7 +100,7 @@ fast with a clear message if any are missing.
 | 3 | Escalation rule | Both triggers (sensitive intent, low confidence) route correctly; unit tests cover both plus the pass-through case | 2 | done, 5 unit tests passing including the threshold boundary (2026-10-04) |
 | 4 | KB + RAG retrieval | Given a message, retrieval returns the right mock KB article(s) | None | done, 4 unit tests passing, 15-article KB written (2026-10-04) |
 | 5 | Draft generation | A real Gmail draft is created, grounded in the retrieved KB content | 1, 4 | done: draft-text generation (slice 4) and gateway.create_draft() (slice 1) both built and unit-tested; not yet wired into one end-to-end flow, that's slice 9's integration test (2026-10-05) |
-| 6 | monday.com gateway | Items created/updated correctly reflecting each message's state | None | not started |
+| 6 | monday.com gateway | Items created/updated correctly reflecting each message's state | None | done, real connectivity confirmed: created real item 13204530514 on the board and updated its status, via `scripts/check_monday_connection.py` (2026-10-05) |
 | 7 | Closed-loop sent-detection | Manually sending a test draft updates its monday.com item within one poll cycle | 1, 6 | not started |
 | 8 | Setup script | Running it populates the Gmail account with ~15-20 synthetic test messages from empty | 1 | not started |
 | 9 | Full test suite | Unit + integration + deliberate-breakage checks all pass, numbers written down exactly | 1-8 | not started |
