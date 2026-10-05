@@ -95,7 +95,7 @@ fast with a clear message if any are missing.
 ## Slices
 | # | Title | Done when | Blocked by | Status |
 |---|---|---|---|---|
-| 1 | Gmail gateway | Can list test messages under the Triage-Demo label and track which are already processed | None | done: list/get/mark_processed/apply_label/create_draft built and unit-tested (13 tests, fake Gmail service); real OAuth bootstrap written (`app/gateways/gmail_auth.py`), connectivity not yet verified against the real account, run `scripts/check_gmail_connection.py` to confirm (2026-10-05) |
+| 1 | Gmail gateway | Can list test messages under the Triage-Demo label and track which are already processed | None | done, real connectivity confirmed 2026-10-05: OAuth consent completed, script output "Connected. Found 0 unprocessed message(s) under 'Triage-Demo'." (expected, no test messages yet) |
 | 2 | Classification service | Classifies urgency/intent with a confidence score, tested against a labeled synthetic set, accuracy reported honestly | None (corrected 2026-10-04: does not need the Gmail gateway, only a message) | partly done: validation/clamping rules built and unit-tested (9 tests, fake gateway), real-accuracy-on-labeled-set check still needs a real ANTHROPIC_API_KEY, not run yet |
 | 3 | Escalation rule | Both triggers (sensitive intent, low confidence) route correctly; unit tests cover both plus the pass-through case | 2 | done, 5 unit tests passing including the threshold boundary (2026-10-04) |
 | 4 | KB + RAG retrieval | Given a message, retrieval returns the right mock KB article(s) | None | done, 4 unit tests passing, 15-article KB written (2026-10-04) |
