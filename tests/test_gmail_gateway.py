@@ -255,3 +255,44 @@ def test_create_draft_raises_gateway_error_on_api_failure():
 
     with pytest.raises(GatewayError):
         gateway.create_draft(thread_id="t1", to="a@b.com", subject="subj", body_text="body")
+
+
+class _FakeInsertMessagesResource(_FakeMessagesResource):
+    def __init__(self, *args, insert_exc=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._insert_exc = insert_exc
+        self.insert_calls = []
+
+    def insert(self, userId, body):
+        self.insert_calls.append(body)
+        return _FakeExecutor({"id": "inserted_1"}, exc=self._insert_exc)
+
+
+def test_insert_message_applies_the_requested_labels():
+    messages_resource = _FakeInsertMessagesResource()
+    labels_resource = _FakeLabelsResource(
+        existing_labels=[{"id": "Label_1", "name": "Triage-Demo"}]
+    )
+    gateway = _gateway(_FakeService(messages_resource=messages_resource, labels_resource=labels_resource))
+
+    message_id = gateway.insert_message(
+        sender="customer@example.com",
+        to="me@example.com",
+        subject="Where is my order",
+        body_text="Hi, checking on order status.",
+        label_names=["Triage-Demo"],
+    )
+
+    assert message_id == "inserted_1"
+    assert messages_resource.insert_calls[0]["labelIds"] == ["Label_1"]
+
+
+def test_insert_message_raises_gateway_error_on_api_failure():
+    messages_resource = _FakeInsertMessagesResource(insert_exc=RuntimeError("down"))
+    labels_resource = _FakeLabelsResource(existing_labels=[{"id": "Label_1", "name": "Triage-Demo"}])
+    gateway = _gateway(_FakeService(messages_resource=messages_resource, labels_resource=labels_resource))
+
+    with pytest.raises(GatewayError):
+        gateway.insert_message(
+            sender="a@b.com", to="c@d.com", subject="subj", body_text="body", label_names=["Triage-Demo"]
+        )

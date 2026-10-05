@@ -102,7 +102,7 @@ fast with a clear message if any are missing.
 | 5 | Draft generation | A real Gmail draft is created, grounded in the retrieved KB content | 1, 4 | done: draft-text generation (slice 4) and gateway.create_draft() (slice 1) both built and unit-tested; not yet wired into one end-to-end flow, that's slice 9's integration test (2026-10-05) |
 | 6 | monday.com gateway | Items created/updated correctly reflecting each message's state | None | done, real connectivity confirmed: created real item 13204530514 on the board and updated its status, via `scripts/check_monday_connection.py` (2026-10-05) |
 | 7 | Closed-loop sent-detection | Manually sending a test draft updates its monday.com item within one poll cycle | 1, 6 | not started |
-| 8 | Setup script | Running it populates the Gmail account with ~15-20 synthetic test messages from empty | 1 | not started |
+| 8 | Setup script | Running it populates the Gmail account with ~15-20 synthetic test messages from empty | 1 | done, run for real 2026-10-05: inserted 18 synthetic manufacturer messages (`scripts/seed_test_messages.py`), covering all 5 intents plus ambiguous/safety cases; re-verified via check_gmail_connection.py, "Found 18 unprocessed message(s)" |
 | 9 | Full test suite | Unit + integration + deliberate-breakage checks all pass, numbers written down exactly | 1-8 | not started |
 | 10 | Runbook + case study draft | RUNBOOK.md complete, Loom recorded, case study drafted with honest stand-ins/limits | 9 | not started |
 

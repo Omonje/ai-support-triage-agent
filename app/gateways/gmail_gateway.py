@@ -98,6 +98,28 @@ class GmailGateway:
 
         return result["id"]
 
+    def insert_message(
+        self, sender: str, to: str, subject: str, body_text: str, label_names: list[str]
+    ) -> str:
+        """Inserts a message directly into the mailbox (not a real SMTP
+        send). Used only by the setup script to seed synthetic test data."""
+        label_ids = [self._ensure_label_id(name) for name in label_names]
+
+        mime_message = MIMEText(body_text)
+        mime_message["From"] = sender
+        mime_message["To"] = to
+        mime_message["Subject"] = subject
+
+        raw = base64.urlsafe_b64encode(mime_message.as_bytes()).decode("ascii")
+        body = {"raw": raw, "labelIds": label_ids}
+
+        try:
+            result = self._service.users().messages().insert(userId="me", body=body).execute()
+        except Exception as exc:
+            raise GatewayError("gmail", f"Inserting message failed: {exc}") from exc
+
+        return result["id"]
+
     def _ensure_label_id(self, label_name: str) -> str:
         if label_name in self._label_id_cache:
             return self._label_id_cache[label_name]
