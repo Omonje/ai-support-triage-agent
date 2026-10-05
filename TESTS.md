@@ -7,7 +7,8 @@
 | Escalation rule (two triggers: sensitive intent, low confidence) | Service layer | unit | written, 5 tests passing including threshold boundary (2026-10-04) |
 | Retrieval (does it return the right KB article for a given message) | Service layer, real small fixed article set, no faking needed (deterministic local computation) | unit | written, 4 tests passing (2026-10-04) |
 | Draft generation is grounded in retrieved KB content | Service layer, Claude API faked | unit | written, 5 tests passing, incl. refusing to draft with zero KB articles (2026-10-04) |
-| Gmail gateway (read label, create draft, apply label) | Repository layer, real Gmail test account | integration | not started |
+| Gmail gateway (read label, create draft, apply label) | Repository layer, fake Gmail service | unit | written, 13 tests passing (2026-10-05) |
+| Gmail gateway, real connectivity | Repository layer, real Gmail account | integration | not run yet, `scripts/check_gmail_connection.py` written for this |
 | monday.com gateway (create/update item, status transitions) | Repository layer, real monday.com Free account | integration | not started |
 | Closed-loop detection (sent draft updates monday.com item) | Full path | integration | not started |
 | Whole request path, message in to monday.com item out | Entry to repository, real test account, synthetic messages | integration | not started |

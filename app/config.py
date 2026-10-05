@@ -18,6 +18,7 @@ class Settings:
     gmail_oauth_client_path: str
     gmail_token_cache_path: str
     gmail_label: str
+    gmail_processed_label: str
     gmail_escalation_label: str
     monday_api_token: str
     monday_board_id: str
@@ -52,6 +53,7 @@ def load_settings(env_file: str | None = ".env") -> Settings:
         gmail_oauth_client_path=os.getenv("GMAIL_OAUTH_CLIENT_PATH", "credentials.json"),
         gmail_token_cache_path=os.getenv("GMAIL_TOKEN_CACHE_PATH", "gmail_token.json"),
         gmail_label=os.getenv("GMAIL_LABEL", "Triage-Demo"),
+        gmail_processed_label=os.getenv("GMAIL_PROCESSED_LABEL", "Processed"),
         gmail_escalation_label=os.getenv("GMAIL_ESCALATION_LABEL", "Needs-Human"),
         monday_api_token=os.environ["MONDAY_API_TOKEN"],
         monday_board_id=os.environ["MONDAY_BOARD_ID"],
