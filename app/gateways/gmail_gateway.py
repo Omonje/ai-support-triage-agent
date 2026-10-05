@@ -27,6 +27,10 @@ class GmailGateway:
         self._escalation_label = escalation_label
         self._label_id_cache: dict[str, str] = {}
 
+    @property
+    def escalation_label(self) -> str:
+        return self._escalation_label
+
     def list_new_message_ids(self) -> list[str]:
         query = f"label:{self._label} -label:{self._processed_label}"
         try:
