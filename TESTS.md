@@ -15,7 +15,7 @@
 | Whole request path, message in to monday.com item out | Entry to repository, real test account, synthetic messages | integration | not started |
 | Refused paths: malformed message, empty body, non-English (if out of scope), duplicate message ID reprocessed | Service + entry | unit | not started |
 | Failure paths: Claude API down or slow, Gmail API rate-limited, monday.com API down | Service + repository, faked failures | unit | not started |
-| Pipeline (message in -> classify/escalate/draft -> monday item -> marked processed) | Service layer, all three gateways faked | unit | written, 5 tests passing (2026-10-05) |
+| Pipeline (message in -> classify/escalate/draft -> monday item -> marked processed) | Service layer, all three gateways faked | unit | written, 7 tests passing (2026-10-05/06), includes one-message-fails-rest-continue and failed-message-not-marked-processed |
 | Retry-with-backoff on a transient LLM API failure | `app/gateways/retry.py` | unit | written, 4 tests passing, confirmed real: caught an actual Gemini 503 in production use 2026-10-06 that prompted building this | |
 | Whole pipeline, real run against all 18 seeded messages, real Gemini + Gmail + monday.com | Full path | integration | attempted 2026-10-06, blocked mid-run, see LOG.md, retry in progress |
 

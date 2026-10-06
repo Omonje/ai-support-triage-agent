@@ -24,11 +24,14 @@ def _build_llm_gateway(settings):
         return ClaudeGateway(Anthropic(api_key=settings.anthropic_api_key))
 
     if settings.llm_provider == "gemini":
+        import os
+
         from google import genai
 
         from app.gateways.gemini_gateway import GeminiGateway
 
-        return GeminiGateway(genai.Client(api_key=settings.google_api_key))
+        model = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
+        return GeminiGateway(genai.Client(api_key=settings.google_api_key), model=model)
 
     raise ConfigError(f"No gateway wired up for LLM_PROVIDER={settings.llm_provider!r}")
 
@@ -50,7 +53,7 @@ def main() -> None:
     monday_gateway = MondayGateway(api_token=settings.monday_api_token, board_id=settings.monday_board_id)
     kb_articles = load_articles()
 
-    results = process_new_messages(
+    results, failures = process_new_messages(
         gmail_gateway=gmail_gateway,
         llm_gateway=llm_gateway,
         monday_gateway=monday_gateway,
@@ -58,10 +61,14 @@ def main() -> None:
         confidence_threshold=settings.confidence_escalation_threshold,
     )
 
-    print(f"Processed {len(results)} message(s).")
+    print(f"Processed {len(results)} message(s), {len(failures)} failure(s).")
     for result in results:
         marker = "ESCALATED" if result.escalated else "DRAFTED "
         print(f"  [{marker}] {result.gmail_message_id} -> monday item {result.monday_item_id} ({result.status})")
+    for failure in failures:
+        print(f"  [FAILED  ] {failure.gmail_message_id}: {failure.error}")
+    if failures:
+        print("\nFailed messages were NOT marked processed, re-run this script to retry them.")
 
 
 if __name__ == "__main__":

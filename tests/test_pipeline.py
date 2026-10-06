@@ -5,14 +5,22 @@ from app.service.pipeline import process_new_messages
 
 
 class _FakeClaudeGateway:
-    def __init__(self, classification: RawClassification, draft_text: str = "Thanks, here is your answer."):
+    def __init__(
+        self,
+        classification: RawClassification,
+        draft_text: str = "Thanks, here is your answer.",
+        fail_for_message_ids: set | None = None,
+    ):
         self._classification = classification
         self._draft_text = draft_text
+        self._fail_for = fail_for_message_ids or set()
         self.classify_calls = []
         self.draft_calls = []
 
     def classify_message(self, subject, body):
         self.classify_calls.append((subject, body))
+        if subject in self._fail_for:
+            raise RuntimeError(f"simulated transient failure classifying {subject!r}")
         return self._classification
 
     def draft_reply(self, subject, body, kb_articles):
@@ -71,7 +79,7 @@ def test_non_sensitive_high_confidence_message_gets_a_draft_and_monday_item():
     gmail = _FakeGmailGateway({"m1": _message()})
     monday = _FakeMondayGateway()
 
-    results = process_new_messages(
+    results, failures = process_new_messages(
         gmail_gateway=gmail,
         llm_gateway=claude,
         monday_gateway=monday,
@@ -88,6 +96,7 @@ def test_non_sensitive_high_confidence_message_gets_a_draft_and_monday_item():
     assert len(monday.created_records) == 1
     assert monday.created_records[0].status == "Draft Ready for Approval"
     assert monday.created_records[0].gmail_draft_id == "draft_1"
+    assert failures == []
 
 
 def test_sensitive_intent_message_is_escalated_without_a_draft():
@@ -99,7 +108,7 @@ def test_sensitive_intent_message_is_escalated_without_a_draft():
     gmail = _FakeGmailGateway({"m1": _message()})
     monday = _FakeMondayGateway()
 
-    results = process_new_messages(
+    results, failures = process_new_messages(
         gmail_gateway=gmail,
         llm_gateway=claude,
         monday_gateway=monday,
@@ -113,6 +122,7 @@ def test_sensitive_intent_message_is_escalated_without_a_draft():
     assert gmail.applied_labels == [("m1", "Needs-Human")]
     assert monday.created_records[0].status == "Escalated - Needs Human"
     assert monday.created_records[0].gmail_draft_id == ""
+    assert failures == []
 
 
 def test_low_confidence_message_is_escalated_even_with_safe_intent():
@@ -122,7 +132,7 @@ def test_low_confidence_message_is_escalated_even_with_safe_intent():
     gmail = _FakeGmailGateway({"m1": _message()})
     monday = _FakeMondayGateway()
 
-    results = process_new_messages(
+    results, failures = process_new_messages(
         gmail_gateway=gmail,
         llm_gateway=claude,
         monday_gateway=monday,
@@ -132,6 +142,7 @@ def test_low_confidence_message_is_escalated_even_with_safe_intent():
 
     assert results[0].escalated is True
     assert gmail.applied_labels == [("m1", "Needs-Human")]
+    assert failures == []
 
 
 def test_processes_every_message_returned_by_the_gateway():
@@ -146,7 +157,7 @@ def test_processes_every_message_returned_by_the_gateway():
     )
     monday = _FakeMondayGateway()
 
-    results = process_new_messages(
+    results, failures = process_new_messages(
         gmail_gateway=gmail,
         llm_gateway=claude,
         monday_gateway=monday,
@@ -156,6 +167,7 @@ def test_processes_every_message_returned_by_the_gateway():
 
     assert len(results) == 2
     assert gmail.marked_processed == ["m1", "m2"]
+    assert failures == []
 
 
 def test_every_processed_message_is_marked_processed_even_when_escalated():
@@ -163,6 +175,54 @@ def test_every_processed_message_is_marked_processed_even_when_escalated():
         RawClassification(intent="defect_complaint", urgency="high", confidence=0.9, reasoning="defect")
     )
     gmail = _FakeGmailGateway({"m1": _message()})
+    monday = _FakeMondayGateway()
+
+    _, failures = process_new_messages(
+        gmail_gateway=gmail,
+        llm_gateway=claude,
+        monday_gateway=monday,
+        kb_articles=_KB_ARTICLES,
+        confidence_threshold=0.6,
+    )
+
+    assert gmail.marked_processed == ["m1"]
+    assert failures == []
+
+
+def test_one_message_failing_does_not_stop_the_rest_of_the_batch():
+    claude = _FakeClaudeGateway(
+        RawClassification(intent="order_status", urgency="low", confidence=0.9, reasoning="asking about order"),
+        fail_for_message_ids={"Fails here"},
+    )
+    gmail = _FakeGmailGateway(
+        {
+            "m1": _message("m1", "Fine subject 1", "body 1"),
+            "m2": _message("m2", "Fails here", "this one blows up"),
+            "m3": _message("m3", "Fine subject 3", "body 3"),
+        }
+    )
+    monday = _FakeMondayGateway()
+
+    results, failures = process_new_messages(
+        gmail_gateway=gmail,
+        llm_gateway=claude,
+        monday_gateway=monday,
+        kb_articles=_KB_ARTICLES,
+        confidence_threshold=0.6,
+    )
+
+    assert [r.gmail_message_id for r in results] == ["m1", "m3"]
+    assert len(failures) == 1
+    assert failures[0].gmail_message_id == "m2"
+    assert "simulated transient failure" in failures[0].error
+
+
+def test_a_failed_message_is_not_marked_processed_so_it_retries_next_run():
+    claude = _FakeClaudeGateway(
+        RawClassification(intent="order_status", urgency="low", confidence=0.9, reasoning="ok"),
+        fail_for_message_ids={"Fails here"},
+    )
+    gmail = _FakeGmailGateway({"m1": _message("m1", "Fails here", "body")})
     monday = _FakeMondayGateway()
 
     process_new_messages(
@@ -173,4 +233,5 @@ def test_every_processed_message_is_marked_processed_even_when_escalated():
         confidence_threshold=0.6,
     )
 
-    assert gmail.marked_processed == ["m1"]
+    assert gmail.marked_processed == []
+    assert monday.created_records == []

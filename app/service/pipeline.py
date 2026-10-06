@@ -24,6 +24,12 @@ class ProcessingResult:
     status: str
 
 
+@dataclass(frozen=True)
+class ProcessingFailure:
+    gmail_message_id: str
+    error: str
+
+
 def process_one_message(
     message,
     *,
@@ -78,17 +84,25 @@ def process_one_message(
 
 def process_new_messages(
     *, gmail_gateway, llm_gateway, monday_gateway, kb_articles, confidence_threshold: float
-) -> list[ProcessingResult]:
+) -> tuple[list[ProcessingResult], list[ProcessingFailure]]:
+    """One message failing (a transient API error, most often) does not
+    stop the rest of the batch. A failed message is never marked
+    processed, so it's picked up again on the next run rather than
+    silently dropped."""
     results = []
+    failures = []
     for message_id in gmail_gateway.list_new_message_ids():
-        message = gmail_gateway.get_message(message_id)
-        result = process_one_message(
-            message,
-            llm_gateway=llm_gateway,
-            gmail_gateway=gmail_gateway,
-            monday_gateway=monday_gateway,
-            kb_articles=kb_articles,
-            confidence_threshold=confidence_threshold,
-        )
-        results.append(result)
-    return results
+        try:
+            message = gmail_gateway.get_message(message_id)
+            result = process_one_message(
+                message,
+                llm_gateway=llm_gateway,
+                gmail_gateway=gmail_gateway,
+                monday_gateway=monday_gateway,
+                kb_articles=kb_articles,
+                confidence_threshold=confidence_threshold,
+            )
+            results.append(result)
+        except Exception as exc:
+            failures.append(ProcessingFailure(gmail_message_id=message_id, error=str(exc)))
+    return results, failures
