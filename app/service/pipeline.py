@@ -27,13 +27,13 @@ class ProcessingResult:
 def process_one_message(
     message,
     *,
-    claude_gateway,
+    llm_gateway,
     gmail_gateway,
     monday_gateway,
     kb_articles,
     confidence_threshold: float,
 ) -> ProcessingResult:
-    classification = classify(claude_gateway, message.subject, message.body)
+    classification = classify(llm_gateway, message.subject, message.body)
     decision = decide_escalation(classification, confidence_threshold)
 
     if decision.escalate:
@@ -44,7 +44,7 @@ def process_one_message(
         reasoning = decision.reason
     else:
         retrieved = retrieve(message.body, kb_articles, top_k=2)
-        draft = build_draft(claude_gateway, message.subject, message.body, retrieved)
+        draft = build_draft(llm_gateway, message.subject, message.body, retrieved)
         gmail_draft_id = gmail_gateway.create_draft(
             message.thread_id, message.sender, message.subject, draft.text
         )
@@ -77,14 +77,14 @@ def process_one_message(
 
 
 def process_new_messages(
-    *, gmail_gateway, claude_gateway, monday_gateway, kb_articles, confidence_threshold: float
+    *, gmail_gateway, llm_gateway, monday_gateway, kb_articles, confidence_threshold: float
 ) -> list[ProcessingResult]:
     results = []
     for message_id in gmail_gateway.list_new_message_ids():
         message = gmail_gateway.get_message(message_id)
         result = process_one_message(
             message,
-            claude_gateway=claude_gateway,
+            llm_gateway=llm_gateway,
             gmail_gateway=gmail_gateway,
             monday_gateway=monday_gateway,
             kb_articles=kb_articles,

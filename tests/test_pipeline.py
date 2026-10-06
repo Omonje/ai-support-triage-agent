@@ -73,7 +73,7 @@ def test_non_sensitive_high_confidence_message_gets_a_draft_and_monday_item():
 
     results = process_new_messages(
         gmail_gateway=gmail,
-        claude_gateway=claude,
+        llm_gateway=claude,
         monday_gateway=monday,
         kb_articles=_KB_ARTICLES,
         confidence_threshold=0.6,
@@ -101,7 +101,7 @@ def test_sensitive_intent_message_is_escalated_without_a_draft():
 
     results = process_new_messages(
         gmail_gateway=gmail,
-        claude_gateway=claude,
+        llm_gateway=claude,
         monday_gateway=monday,
         kb_articles=_KB_ARTICLES,
         confidence_threshold=0.6,
@@ -124,7 +124,7 @@ def test_low_confidence_message_is_escalated_even_with_safe_intent():
 
     results = process_new_messages(
         gmail_gateway=gmail,
-        claude_gateway=claude,
+        llm_gateway=claude,
         monday_gateway=monday,
         kb_articles=_KB_ARTICLES,
         confidence_threshold=0.6,
@@ -148,7 +148,7 @@ def test_processes_every_message_returned_by_the_gateway():
 
     results = process_new_messages(
         gmail_gateway=gmail,
-        claude_gateway=claude,
+        llm_gateway=claude,
         monday_gateway=monday,
         kb_articles=_KB_ARTICLES,
         confidence_threshold=0.6,
@@ -167,7 +167,7 @@ def test_every_processed_message_is_marked_processed_even_when_escalated():
 
     process_new_messages(
         gmail_gateway=gmail,
-        claude_gateway=claude,
+        llm_gateway=claude,
         monday_gateway=monday,
         kb_articles=_KB_ARTICLES,
         confidence_threshold=0.6,

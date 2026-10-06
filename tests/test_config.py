@@ -10,6 +10,33 @@ def test_loads_with_all_required_vars_set(required_env):
     assert settings.monday_board_id == "123456"
     assert settings.gmail_label == "Triage-Demo"
     assert settings.confidence_escalation_threshold == 0.6
+    assert settings.llm_provider == "claude"
+
+
+def test_defaults_to_claude_and_does_not_require_a_google_key(required_env):
+    settings = load_settings(env_file=None)
+    assert settings.llm_provider == "claude"
+    assert settings.google_api_key == ""
+
+
+def test_gemini_provider_requires_google_api_key_not_anthropic(required_env, monkeypatch):
+    monkeypatch.setenv("LLM_PROVIDER", "gemini")
+    monkeypatch.delenv("ANTHROPIC_API_KEY")
+
+    with pytest.raises(ConfigError, match="GOOGLE_API_KEY"):
+        load_settings(env_file=None)
+
+    monkeypatch.setenv("GOOGLE_API_KEY", "test-google-key")
+    settings = load_settings(env_file=None)
+    assert settings.llm_provider == "gemini"
+    assert settings.google_api_key == "test-google-key"
+
+
+def test_fails_fast_on_unknown_llm_provider(required_env, monkeypatch):
+    monkeypatch.setenv("LLM_PROVIDER", "not-a-real-provider")
+
+    with pytest.raises(ConfigError, match="LLM_PROVIDER"):
+        load_settings(env_file=None)
 
 
 def test_fails_fast_when_a_required_var_is_missing(required_env, monkeypatch):

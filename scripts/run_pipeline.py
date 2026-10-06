@@ -6,10 +6,8 @@ mark the message processed. Safe to re-run, already-processed messages
 Usage: python -m scripts.run_pipeline
 """
 
-from anthropic import Anthropic
-
 from app.config import load_settings
-from app.gateways.claude_gateway import ClaudeGateway
+from app.errors import ConfigError
 from app.gateways.gmail_auth import build_gmail_service
 from app.gateways.gmail_gateway import GmailGateway
 from app.gateways.knowledge_base_repo import load_articles
@@ -17,10 +15,29 @@ from app.gateways.monday_gateway import MondayGateway
 from app.service.pipeline import process_new_messages
 
 
+def _build_llm_gateway(settings):
+    if settings.llm_provider == "claude":
+        from anthropic import Anthropic
+
+        from app.gateways.claude_gateway import ClaudeGateway
+
+        return ClaudeGateway(Anthropic(api_key=settings.anthropic_api_key))
+
+    if settings.llm_provider == "gemini":
+        from google import genai
+
+        from app.gateways.gemini_gateway import GeminiGateway
+
+        return GeminiGateway(genai.Client(api_key=settings.google_api_key))
+
+    raise ConfigError(f"No gateway wired up for LLM_PROVIDER={settings.llm_provider!r}")
+
+
 def main() -> None:
     settings = load_settings()
 
-    claude_gateway = ClaudeGateway(Anthropic(api_key=settings.anthropic_api_key))
+    llm_gateway = _build_llm_gateway(settings)
+    print(f"Using LLM provider: {settings.llm_provider}")
 
     gmail_service = build_gmail_service(settings.gmail_oauth_client_path, settings.gmail_token_cache_path)
     gmail_gateway = GmailGateway(
@@ -35,7 +52,7 @@ def main() -> None:
 
     results = process_new_messages(
         gmail_gateway=gmail_gateway,
-        claude_gateway=claude_gateway,
+        llm_gateway=llm_gateway,
         monday_gateway=monday_gateway,
         kb_articles=kb_articles,
         confidence_threshold=settings.confidence_escalation_threshold,

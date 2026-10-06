@@ -9,12 +9,21 @@ from dotenv import load_dotenv
 
 from app.errors import ConfigError
 
-_REQUIRED = ["ANTHROPIC_API_KEY", "MONDAY_API_TOKEN", "MONDAY_BOARD_ID"]
+_ALWAYS_REQUIRED = ["MONDAY_API_TOKEN", "MONDAY_BOARD_ID"]
+
+# Which env var each LLM provider needs. Only the active provider's key
+# is required, so swapping providers never needs both configured.
+_PROVIDER_KEY_ENV_VAR = {
+    "claude": "ANTHROPIC_API_KEY",
+    "gemini": "GOOGLE_API_KEY",
+}
 
 
 @dataclass(frozen=True)
 class Settings:
+    llm_provider: str
     anthropic_api_key: str
+    google_api_key: str
     gmail_oauth_client_path: str
     gmail_token_cache_path: str
     gmail_label: str
@@ -31,7 +40,14 @@ def load_settings(env_file: str | None = ".env") -> Settings:
     if env_file:
         load_dotenv(env_file)
 
-    missing = [name for name in _REQUIRED if not os.getenv(name)]
+    llm_provider = os.getenv("LLM_PROVIDER", "claude").lower()
+    if llm_provider not in _PROVIDER_KEY_ENV_VAR:
+        raise ConfigError(
+            f"LLM_PROVIDER must be one of {sorted(_PROVIDER_KEY_ENV_VAR)}, got {llm_provider!r}."
+        )
+
+    required = [*_ALWAYS_REQUIRED, _PROVIDER_KEY_ENV_VAR[llm_provider]]
+    missing = [name for name in required if not os.getenv(name)]
     if missing:
         raise ConfigError(
             "Missing required environment variable(s): "
@@ -49,7 +65,9 @@ def load_settings(env_file: str | None = ".env") -> Settings:
         raise ConfigError("CONFIDENCE_ESCALATION_THRESHOLD must be between 0 and 1.")
 
     return Settings(
-        anthropic_api_key=os.environ["ANTHROPIC_API_KEY"],
+        llm_provider=llm_provider,
+        anthropic_api_key=os.getenv("ANTHROPIC_API_KEY", ""),
+        google_api_key=os.getenv("GOOGLE_API_KEY", ""),
         gmail_oauth_client_path=os.getenv("GMAIL_OAUTH_CLIENT_PATH", "credentials.json"),
         gmail_token_cache_path=os.getenv("GMAIL_TOKEN_CACHE_PATH", "gmail_token.json"),
         gmail_label=os.getenv("GMAIL_LABEL", "Triage-Demo"),
