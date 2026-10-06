@@ -41,7 +41,7 @@ _ARTICLE = Article(
 
 def test_draft_reply_returns_the_claude_text():
     client = _FakeAnthropicClient(text="Thanks for reaching out, please start a defect claim...")
-    gateway = ClaudeGateway(client)
+    gateway = ClaudeGateway(client, sleep=lambda s: None)
 
     draft = gateway.draft_reply("Broken part", "It arrived cracked.", [_ARTICLE])
 
@@ -50,7 +50,7 @@ def test_draft_reply_returns_the_claude_text():
 
 def test_draft_reply_raises_gateway_error_when_api_call_fails():
     client = _FakeAnthropicClient(exc=RuntimeError("down"))
-    gateway = ClaudeGateway(client)
+    gateway = ClaudeGateway(client, sleep=lambda s: None)
 
     with pytest.raises(GatewayError):
         gateway.draft_reply("subj", "body", [_ARTICLE])
@@ -58,7 +58,7 @@ def test_draft_reply_raises_gateway_error_when_api_call_fails():
 
 def test_draft_reply_raises_gateway_error_on_empty_response():
     client = _FakeAnthropicClient(text="   ")
-    gateway = ClaudeGateway(client)
+    gateway = ClaudeGateway(client, sleep=lambda s: None)
 
     with pytest.raises(GatewayError):
         gateway.draft_reply("subj", "body", [_ARTICLE])

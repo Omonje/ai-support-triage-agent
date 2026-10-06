@@ -35,7 +35,7 @@ def test_parses_valid_json_response():
         text='{"intent": "order_status", "urgency": "low", '
         '"confidence": 0.8, "reasoning": "asking where order is"}'
     )
-    gateway = ClaudeGateway(client)
+    gateway = ClaudeGateway(client, sleep=lambda s: None)
 
     result = gateway.classify_message("Where's my order", "Hi, I ordered 2 weeks ago.")
 
@@ -47,7 +47,7 @@ def test_parses_valid_json_response():
 
 def test_raises_gateway_error_on_malformed_json():
     client = _FakeAnthropicClient(text="not json at all")
-    gateway = ClaudeGateway(client)
+    gateway = ClaudeGateway(client, sleep=lambda s: None)
 
     with pytest.raises(GatewayError):
         gateway.classify_message("subj", "body")
@@ -55,7 +55,7 @@ def test_raises_gateway_error_on_malformed_json():
 
 def test_raises_gateway_error_when_api_call_fails():
     client = _FakeAnthropicClient(exc=RuntimeError("network down"))
-    gateway = ClaudeGateway(client)
+    gateway = ClaudeGateway(client, sleep=lambda s: None)
 
     with pytest.raises(GatewayError):
         gateway.classify_message("subj", "body")
@@ -63,7 +63,7 @@ def test_raises_gateway_error_when_api_call_fails():
 
 def test_raises_gateway_error_on_missing_fields():
     client = _FakeAnthropicClient(text='{"intent": "order_status"}')
-    gateway = ClaudeGateway(client)
+    gateway = ClaudeGateway(client, sleep=lambda s: None)
 
     with pytest.raises(GatewayError):
         gateway.classify_message("subj", "body")

@@ -5,6 +5,7 @@ which provider answered. Swapped in when ANTHROPIC credits aren't
 available; see DECISIONS.md."""
 
 import json
+import time
 
 from app.errors import GatewayError
 from app.gateways.knowledge_base_repo import Article
@@ -14,20 +15,25 @@ from app.gateways.llm_types import (
     DraftReply,
     RawClassification,
 )
+from app.gateways.retry import retry_with_backoff
 
 DEFAULT_MODEL = "gemini-flash-latest"
 
 
 class GeminiGateway:
-    def __init__(self, client, model: str = DEFAULT_MODEL):
+    def __init__(self, client, model: str = DEFAULT_MODEL, sleep=time.sleep):
         self._client = client
         self._model = model
+        self._sleep = sleep
 
     def classify_message(self, subject: str, body: str) -> RawClassification:
         prompt = CLASSIFICATION_PROMPT_TEMPLATE.format(subject=subject, body=body)
 
         try:
-            response = self._client.models.generate_content(model=self._model, contents=prompt)
+            response = retry_with_backoff(
+                lambda: self._client.models.generate_content(model=self._model, contents=prompt),
+                sleep=self._sleep,
+            )
         except Exception as exc:
             raise GatewayError("gemini", f"Classification call failed: {exc}") from exc
 
@@ -59,7 +65,10 @@ class GeminiGateway:
         prompt = DRAFT_PROMPT_TEMPLATE.format(subject=subject, body=body, context=context)
 
         try:
-            response = self._client.models.generate_content(model=self._model, contents=prompt)
+            response = retry_with_backoff(
+                lambda: self._client.models.generate_content(model=self._model, contents=prompt),
+                sleep=self._sleep,
+            )
         except Exception as exc:
             raise GatewayError("gemini", f"Draft generation call failed: {exc}") from exc
 

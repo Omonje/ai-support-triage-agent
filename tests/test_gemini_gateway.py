@@ -30,7 +30,7 @@ def test_classify_parses_plain_json_response():
         text='{"intent": "order_status", "urgency": "low", '
         '"confidence": 0.8, "reasoning": "asking where order is"}'
     )
-    gateway = GeminiGateway(client)
+    gateway = GeminiGateway(client, sleep=lambda s: None)
 
     result = gateway.classify_message("Where's my order", "Hi, I ordered 2 weeks ago.")
 
@@ -43,7 +43,7 @@ def test_classify_strips_markdown_code_fences():
         text='```json\n{"intent": "quote_request", "urgency": "low", '
         '"confidence": 0.7, "reasoning": "asking for a quote"}\n```'
     )
-    gateway = GeminiGateway(client)
+    gateway = GeminiGateway(client, sleep=lambda s: None)
 
     result = gateway.classify_message("subj", "body")
 
@@ -52,7 +52,7 @@ def test_classify_strips_markdown_code_fences():
 
 def test_classify_raises_gateway_error_on_malformed_json():
     client = _FakeGenaiClient(text="not json at all")
-    gateway = GeminiGateway(client)
+    gateway = GeminiGateway(client, sleep=lambda s: None)
 
     with pytest.raises(GatewayError):
         gateway.classify_message("subj", "body")
@@ -60,7 +60,7 @@ def test_classify_raises_gateway_error_on_malformed_json():
 
 def test_classify_raises_gateway_error_when_api_call_fails():
     client = _FakeGenaiClient(exc=RuntimeError("down"))
-    gateway = GeminiGateway(client)
+    gateway = GeminiGateway(client, sleep=lambda s: None)
 
     with pytest.raises(GatewayError):
         gateway.classify_message("subj", "body")
@@ -68,7 +68,7 @@ def test_classify_raises_gateway_error_when_api_call_fails():
 
 def test_classify_raises_gateway_error_on_missing_fields():
     client = _FakeGenaiClient(text='{"intent": "order_status"}')
-    gateway = GeminiGateway(client)
+    gateway = GeminiGateway(client, sleep=lambda s: None)
 
     with pytest.raises(GatewayError):
         gateway.classify_message("subj", "body")
@@ -76,7 +76,7 @@ def test_classify_raises_gateway_error_on_missing_fields():
 
 def test_classify_raises_gateway_error_on_empty_response():
     client = _FakeGenaiClient(text=None)
-    gateway = GeminiGateway(client)
+    gateway = GeminiGateway(client, sleep=lambda s: None)
 
     with pytest.raises(GatewayError):
         gateway.classify_message("subj", "body")
@@ -84,7 +84,7 @@ def test_classify_raises_gateway_error_on_empty_response():
 
 def test_draft_reply_returns_the_text():
     client = _FakeGenaiClient(text="Thanks for reaching out, start a defect claim...")
-    gateway = GeminiGateway(client)
+    gateway = GeminiGateway(client, sleep=lambda s: None)
 
     draft = gateway.draft_reply("Broken part", "It arrived cracked.", [])
 
@@ -93,7 +93,7 @@ def test_draft_reply_returns_the_text():
 
 def test_draft_reply_raises_gateway_error_on_empty_response():
     client = _FakeGenaiClient(text="   ")
-    gateway = GeminiGateway(client)
+    gateway = GeminiGateway(client, sleep=lambda s: None)
 
     with pytest.raises(GatewayError):
         gateway.draft_reply("subj", "body", [])
@@ -101,7 +101,7 @@ def test_draft_reply_raises_gateway_error_on_empty_response():
 
 def test_draft_reply_raises_gateway_error_on_api_failure():
     client = _FakeGenaiClient(exc=RuntimeError("down"))
-    gateway = GeminiGateway(client)
+    gateway = GeminiGateway(client, sleep=lambda s: None)
 
     with pytest.raises(GatewayError):
         gateway.draft_reply("subj", "body", [])

@@ -4,6 +4,7 @@ the service layer's job. See app/gateways/gemini_gateway.py for the
 provider-swapped equivalent, both implement the same two-method interface."""
 
 import json
+import time
 
 from app.errors import GatewayError
 from app.gateways.knowledge_base_repo import Article
@@ -13,6 +14,7 @@ from app.gateways.llm_types import (
     DraftReply,
     RawClassification,
 )
+from app.gateways.retry import retry_with_backoff
 
 # Re-exported so existing `from app.gateways.claude_gateway import RawClassification`
 # style imports keep working unchanged.
@@ -22,18 +24,22 @@ DEFAULT_MODEL = "claude-sonnet-4-5-20250929"
 
 
 class ClaudeGateway:
-    def __init__(self, client, model: str = DEFAULT_MODEL):
+    def __init__(self, client, model: str = DEFAULT_MODEL, sleep=time.sleep):
         self._client = client
         self._model = model
+        self._sleep = sleep
 
     def classify_message(self, subject: str, body: str) -> RawClassification:
         prompt = CLASSIFICATION_PROMPT_TEMPLATE.format(subject=subject, body=body)
 
         try:
-            response = self._client.messages.create(
-                model=self._model,
-                max_tokens=300,
-                messages=[{"role": "user", "content": prompt}],
+            response = retry_with_backoff(
+                lambda: self._client.messages.create(
+                    model=self._model,
+                    max_tokens=300,
+                    messages=[{"role": "user", "content": prompt}],
+                ),
+                sleep=self._sleep,
             )
         except Exception as exc:
             raise GatewayError("claude", f"Classification call failed: {exc}") from exc
@@ -69,10 +75,13 @@ class ClaudeGateway:
         prompt = DRAFT_PROMPT_TEMPLATE.format(subject=subject, body=body, context=context)
 
         try:
-            response = self._client.messages.create(
-                model=self._model,
-                max_tokens=500,
-                messages=[{"role": "user", "content": prompt}],
+            response = retry_with_backoff(
+                lambda: self._client.messages.create(
+                    model=self._model,
+                    max_tokens=500,
+                    messages=[{"role": "user", "content": prompt}],
+                ),
+                sleep=self._sleep,
             )
         except Exception as exc:
             raise GatewayError("claude", f"Draft generation call failed: {exc}") from exc
