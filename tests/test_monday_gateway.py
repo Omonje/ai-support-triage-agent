@@ -100,3 +100,45 @@ def test_update_item_status_raises_gateway_error_on_failure():
 
     with pytest.raises(GatewayError):
         gateway.update_item_status("item_1", "Sent")
+
+
+def test_list_items_with_status_returns_item_id_and_draft_id():
+    http_post = _FakeHttpPost(
+        response_payload={
+            "data": {
+                "boards": [
+                    {
+                        "items_page": {
+                            "items": [
+                                {"id": "item_1", "column_values": [{"text": "draft_a"}]},
+                                {"id": "item_2", "column_values": [{"text": "draft_b"}]},
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    )
+    gateway = MondayGateway(http_post=http_post, api_token="token", board_id="18433915127")
+
+    items = gateway.list_items_with_status("Draft Ready for Approval")
+
+    assert items == [
+        {"item_id": "item_1", "gmail_draft_id": "draft_a"},
+        {"item_id": "item_2", "gmail_draft_id": "draft_b"},
+    ]
+
+
+def test_list_items_with_status_returns_empty_list_when_board_not_found():
+    http_post = _FakeHttpPost(response_payload={"data": {"boards": []}})
+    gateway = MondayGateway(http_post=http_post, api_token="token", board_id="18433915127")
+
+    assert gateway.list_items_with_status("Draft Ready for Approval") == []
+
+
+def test_list_items_with_status_raises_gateway_error_on_failure():
+    http_post = _FakeHttpPost(exc=RuntimeError("down"))
+    gateway = MondayGateway(http_post=http_post, api_token="token", board_id="18433915127")
+
+    with pytest.raises(GatewayError):
+        gateway.list_items_with_status("Draft Ready for Approval")

@@ -37,6 +37,24 @@ mutation ($boardId: ID!, $itemId: ID!, $columnValues: JSON!) {
 }
 """
 
+_LIST_ITEMS_BY_STATUS_QUERY = (
+    """
+query ($boardId: ID!, $statusLabel: String!) {
+  boards(ids: [$boardId]) {
+    items_page(query_params: {rules: [{column_id: "%s", compare_value: [$statusLabel], operator: any_of}]}) {
+      items {
+        id
+        column_values(ids: ["%s"]) {
+          text
+        }
+      }
+    }
+  }
+}
+"""
+    % (COLUMN_STATUS, COLUMN_GMAIL_DRAFT_ID)
+)
+
 
 @dataclass(frozen=True)
 class TriageRecord:
@@ -92,6 +110,22 @@ class MondayGateway:
         }
 
         self._execute(_UPDATE_STATUS_MUTATION, variables)
+
+    def list_items_with_status(self, status: str) -> list[dict]:
+        variables = {"boardId": self._board_id, "statusLabel": status}
+        data = self._execute(_LIST_ITEMS_BY_STATUS_QUERY, variables)
+
+        boards = data.get("boards") or []
+        if not boards:
+            return []
+
+        items = boards[0]["items_page"]["items"]
+        result = []
+        for item in items:
+            column_values = item.get("column_values") or []
+            draft_id = column_values[0].get("text") if column_values else ""
+            result.append({"item_id": item["id"], "gmail_draft_id": draft_id or ""})
+        return result
 
     def _execute(self, query: str, variables: dict) -> dict:
         try:

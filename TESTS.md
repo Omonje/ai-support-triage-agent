@@ -11,7 +11,10 @@
 | Gmail gateway, real connectivity | Repository layer, real Gmail account | integration | passed 2026-10-05: OAuth consent completed (after adding the demo Gmail account as a test user), script output exactly: "Connected. Found 0 unprocessed message(s) under 'Triage-Demo'." (expected, no test messages sent yet) |
 | monday.com gateway (create/update item, status transitions) | Repository layer, fake HTTP post | unit | written, 6 tests passing (2026-10-05) |
 | monday.com gateway, real connectivity | Repository layer, real monday.com account | integration | passed 2026-10-05: created real item 13204530514 on board 18433915127, updated its status to "Sent", both confirmed by the script's own output |
-| Closed-loop detection (sent draft updates monday.com item) | Full path | integration | not started |
+| Closed-loop detection (sent draft updates monday.com item) | Service layer, both gateways faked | unit | written, 4 tests passing (2026-10-06) |
+| monday.com list_items_with_status | Repository layer, fake HTTP post | unit | written, 3 tests passing (2026-10-06) |
+| Gmail draft_exists (404 vs other errors) | Repository layer, fake Gmail service + real HttpError | unit | written, 4 tests passing (2026-10-06) |
+| Closed-loop, real connectivity | Full path, real accounts | integration | passed 2026-10-06: "Checked 0 pending draft(s)" (correct, no drafts exist yet); manual send-a-draft verification pending the full pipeline run |
 | Whole request path, message in to monday.com item out | Entry to repository, real test account, synthetic messages | integration | not started |
 | Refused paths: malformed message, empty body, non-English (if out of scope), duplicate message ID reprocessed | Service + entry | unit | not started |
 | Failure paths: Claude API down or slow, Gmail API rate-limited, monday.com API down | Service + repository, faked failures | unit | not started |

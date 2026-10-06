@@ -7,6 +7,8 @@ import base64
 from dataclasses import dataclass
 from email.mime.text import MIMEText
 
+from googleapiclient.errors import HttpError
+
 from app.errors import GatewayError
 
 
@@ -123,6 +125,21 @@ class GmailGateway:
             raise GatewayError("gmail", f"Inserting message failed: {exc}") from exc
 
         return result["id"]
+
+    def draft_exists(self, draft_id: str) -> bool:
+        """True if the draft is still sitting in Drafts, false if it has
+        been sent or deleted (a 404). Any other failure is a real error,
+        not evidence the draft was sent, and is raised rather than
+        silently treated as 'gone'."""
+        try:
+            self._service.users().drafts().get(userId="me", id=draft_id).execute()
+            return True
+        except HttpError as exc:
+            if exc.resp.status == 404:
+                return False
+            raise GatewayError("gmail", f"Checking draft {draft_id} failed: {exc}") from exc
+        except Exception as exc:
+            raise GatewayError("gmail", f"Checking draft {draft_id} failed: {exc}") from exc
 
     def _ensure_label_id(self, label_name: str) -> str:
         if label_name in self._label_id_cache:
