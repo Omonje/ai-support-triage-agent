@@ -14,7 +14,7 @@
 | Closed-loop detection (sent draft updates monday.com item) | Service layer, both gateways faked | unit | written, 4 tests passing (2026-10-06) |
 | monday.com list_items_with_status | Repository layer, fake HTTP post | unit | written, 3 tests passing (2026-10-06) |
 | Gmail draft_exists (404 vs other errors) | Repository layer, fake Gmail service + real HttpError | unit | written, 4 tests passing (2026-10-06) |
-| Closed-loop, real connectivity | Full path, real accounts | integration | passed 2026-10-08 against the live board with real pending drafts: "Checked 14 pending draft(s)", every one correctly reported "still pending". (The 2026-10-06 "Checked 0 pending draft(s)" result had looked like a pass but was actually a bug, see below and LOG.md: the status filter always returned empty.) Manually sending one test draft and re-checking it flips to "Sent" is the one remaining manual step |
+| Closed-loop, real connectivity | Full path, real accounts | integration | fully passed 2026-10-08: 2 of the 14 real drafts were manually sent from Gmail, `check_sent_drafts` correctly flipped both to "Sent" on the live monday.com board and correctly left the other 12 "still pending". Two real bugs were found and fixed getting here (both in LOG.md): monday's status filter needing an index not label text, and `draft_exists` wrongly trusting a 404 that Gmail never actually returns after a draft is sent from its own draft view |
 | Whole request path, message in to monday.com item out | Entry to repository, real test account, synthetic messages | integration | passed 2026-10-08: all 18 seeded messages processed, confirmed via the real monday.com board (14 "Draft Ready for Approval" + 4 "Escalated - Needs Human") and 0 unprocessed messages left in Gmail |
 | monday.com list_items_with_status filters correctly by status when the board has items in more than one status | Repository layer, fake HTTP post | unit | written, 2026-10-08, regression test for the bug below |
 | Refused paths: malformed message, empty body, non-English (if out of scope), duplicate message ID reprocessed | Service + entry | unit | not started |
@@ -47,7 +47,7 @@ Full suite re-run clean afterward (94 passed), confirming the breaks were fully 
 
 ## Results (exact numbers, with the date)
 - Date: 2026-10-08
-- Unit tests: 94 passing (full suite, `pytest -q`), runs in ~2.3s
+- Unit tests: 95 passing (full suite, `pytest -q`), runs in ~2s
 - Integration tests: Gmail connectivity, monday.com connectivity, closed-loop sent-detection (14 pending drafts found and correctly checked), and the full pipeline real run (18/18 messages processed: 14 drafted, 4 escalated, 0 failures) all passed against live accounts
 - Deliberate breaks caught: 5/5 (see table above)
 - Load test (shape of results and its limits): not applicable at demo scale, note in RUNBOOK.md instead

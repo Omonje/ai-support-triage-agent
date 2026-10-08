@@ -128,18 +128,24 @@ class GmailGateway:
 
     def draft_exists(self, draft_id: str) -> bool:
         """True if the draft is still sitting in Drafts, false if it has
-        been sent or deleted (a 404). Any other failure is a real error,
-        not evidence the draft was sent, and is raised rather than
-        silently treated as 'gone'."""
+        been sent or deleted. A 404 means deleted. But sending a draft
+        from inside Gmail's own draft view does NOT make drafts.get() 404
+        afterward, it keeps succeeding and returns the now-sent message
+        (DRAFT label gone, SENT label present), so that case is checked
+        too (caught 2026-10-08 against a real sent draft, see LOG.md).
+        Any other failure is a real error, not evidence the draft was
+        sent, and is raised rather than silently treated as 'gone'."""
         try:
-            self._service.users().drafts().get(userId="me", id=draft_id).execute()
-            return True
+            draft = self._service.users().drafts().get(userId="me", id=draft_id).execute()
         except HttpError as exc:
             if exc.resp.status == 404:
                 return False
             raise GatewayError("gmail", f"Checking draft {draft_id} failed: {exc}") from exc
         except Exception as exc:
             raise GatewayError("gmail", f"Checking draft {draft_id} failed: {exc}") from exc
+
+        label_ids = draft.get("message", {}).get("labelIds", [])
+        return "DRAFT" in label_ids
 
     def _ensure_label_id(self, label_name: str) -> str:
         if label_name in self._label_id_cache:
