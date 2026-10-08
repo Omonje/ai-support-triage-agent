@@ -1,46 +1,41 @@
-<mxfile host="app.diagrams.net" modified="2026-10-08T00:00:00.000Z" agent="claude-code" version="24.7.0" type="device">
+<mxfile host="app.diagrams.net" agent="claude-code" pages="2">
   <diagram name="AI Support Triage Agent - Data Flow" id="triage-dataflow-1">
     <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1300" pageHeight="820" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-
         <mxCell id="title" value="AI Support Triage Agent — System Interaction and Data Flow" style="text;html=1;fontSize=18;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
           <mxGeometry x="300" y="10" width="700" height="30" as="geometry" />
         </mxCell>
-
-        <mxCell id="gmail" value="Gmail&#10;Triage-Demo label only" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+        <mxCell id="gmail" value="Gmail&#xa;Triage-Demo label only" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="40" y="160" width="220" height="70" as="geometry" />
         </mxCell>
-
-        <mxCell id="worker" value="Pipeline Worker (Python)&#10;scripts/run_pipeline.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+        <mxCell id="worker" value="Pipeline Worker (Python)&#xa;scripts/run_pipeline.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="470" y="160" width="220" height="70" as="geometry" />
         </mxCell>
-
-        <mxCell id="llm" value="LLM Gateway&#10;Claude / Gemini / Groq (swappable)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+        <mxCell id="llm" value="LLM Gateway&#xa;Claude / Gemini / Groq (swappable)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="900" y="160" width="240" height="70" as="geometry" />
         </mxCell>
-
-        <mxCell id="kb" value="Knowledge Base&#10;15 policy articles&#10;(local JSON file)" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;fontStyle=1;boundedLbl=1;" vertex="1" parent="1">
+        <mxCell id="kb" value="Knowledge Base&#xa;15 policy articles&#xa;(local JSON file)" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;fontStyle=1;boundedLbl=1;" vertex="1" parent="1">
           <mxGeometry x="500" y="380" width="160" height="90" as="geometry" />
         </mxCell>
-
-        <mxCell id="monday" value="monday.com board&#10;Support Triage Queue" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+        <mxCell id="monday" value="monday.com board&#xa;Support Triage Queue" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="900" y="400" width="240" height="70" as="geometry" />
         </mxCell>
-
         <mxCell id="human" value="Human reviewer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=12;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="40" y="400" width="220" height="70" as="geometry" />
         </mxCell>
-
+        <mxCell id="slack" value="Slack&#xa;incoming webhook (optional)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="900" y="560" width="240" height="70" as="geometry" />
+        </mxCell>
         <!-- Gmail <-> Worker -->
-        <mxCell id="eg1" value="new message in&#10;(subject, body, sender)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="gmail" target="worker">
+        <mxCell id="eg1" value="new message in&#xa;(subject, body, sender)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="gmail" target="worker">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="eg2" value="create draft + apply label&#10;(never auto-sent)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0;exitY=0.7;exitDx=0;exitDy=0;entryX=1;entryY=0.7;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="worker" target="gmail">
+        <mxCell id="eg2" value="create draft + apply label&#xa;(never auto-sent)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0;exitY=0.7;exitDx=0;exitDy=0;entryX=1;entryY=0.7;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="worker" target="gmail">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="eg3" value="draft_exists() check&#10;(sent or still pending)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;fontSize=10;" edge="1" parent="1" source="worker" target="gmail">
+        <mxCell id="eg3" value="draft_exists() check&#xa;(sent or still pending)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;fontSize=10;" edge="1" parent="1" source="worker" target="gmail">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="350" y="330" />
@@ -48,38 +43,33 @@
             </Array>
           </mxGeometry>
         </mxCell>
-
         <!-- Worker <-> LLM -->
-        <mxCell id="el1" value="subject + body text&#10;(prompt)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="worker" target="llm">
+        <mxCell id="el1" value="subject + body text&#xa;(prompt)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="worker" target="llm">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="el2" value="classification JSON /&#10;drafted reply text" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0;exitY=0.7;exitDx=0;exitDy=0;entryX=1;entryY=0.7;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="llm" target="worker">
+        <mxCell id="el2" value="classification JSON /&#xa;drafted reply text" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0;exitY=0.7;exitDx=0;exitDy=0;entryX=1;entryY=0.7;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="llm" target="worker">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-
         <!-- Worker <-> KB -->
         <mxCell id="ek1" value="query text" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.35;exitY=1;exitDx=0;exitDy=0;entryX=0.35;entryY=0;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="worker" target="kb">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="ek2" value="top-matching article(s)&#10;(title + policy text)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.65;exitY=0;exitDx=0;exitDy=0;entryX=0.65;entryY=1;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="kb" target="worker">
+        <mxCell id="ek2" value="top-matching article(s)&#xa;(title + policy text)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.65;exitY=0;exitDx=0;exitDy=0;entryX=0.65;entryY=1;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="kb" target="worker">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-
         <!-- Worker <-> monday.com -->
-        <mxCell id="em1" value="create/update item&#10;(status, intent, urgency,&#10;confidence, KB used, draft id)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="worker" target="monday">
+        <mxCell id="em1" value="create/update item&#xa;(status, intent, urgency,&#xa;confidence, KB used, draft id)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="worker" target="monday">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="em2" value="items by status&#10;(closed-loop check)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0;exitY=0.7;exitDx=0;exitDy=0;entryX=1;entryY=0.7;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="monday" target="worker">
+        <mxCell id="em2" value="items by status&#xa;(closed-loop check)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0;exitY=0.7;exitDx=0;exitDy=0;entryX=1;entryY=0.7;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="monday" target="worker">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-
         <!-- Human <-> Gmail -->
-        <mxCell id="eh1" value="opens draft, sends&#10;(or doesn't)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="human" target="gmail">
+        <mxCell id="eh1" value="opens draft, sends&#xa;(or doesn&#39;t)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="human" target="gmail">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-
         <!-- Human <-> monday.com (reads the board, crosses the whole diagram) -->
-        <mxCell id="eh2" value="reads the board&#10;(no code needed)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="human" target="monday">
+        <mxCell id="eh2" value="reads the board&#xa;(no code needed)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="human" target="monday">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="150" y="620" />
@@ -87,8 +77,10 @@
             </Array>
           </mxGeometry>
         </mxCell>
-
-        <mxCell id="note" value="The LLM gateway is swappable (Claude, Gemini, or Groq) behind one shared interface, the Worker and every other box never know which one answered. Gmail access is scoped to the Triage-Demo label only, nothing else in the account is read or changed. The agent only ever creates a Gmail draft, it never sends. Every message in this demo is synthetic, no real customer data touches this system." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;align=left;verticalAlign=middle;spacing=10;" vertex="1" parent="1">
+        <mxCell id="es1" value="escalation alert (immediate) /&#xa;summary alert (drafts, once per run)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;" edge="1" parent="1" source="worker" target="slack">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="note" value="The LLM gateway is swappable (Claude, Gemini, or Groq) behind one shared interface, the Worker and every other box never know which one answered. Gmail access is scoped to the Triage-Demo label only, nothing else in the account is read or changed. The agent only ever creates a Gmail draft, it never sends. Slack alerting is optional and one-way: if it fails, the escalation label, the monday.com item, and marking the message processed all still happen, only the alert is skipped. Every message in this demo is synthetic, no real customer data touches this system." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;align=left;verticalAlign=middle;spacing=10;" vertex="1" parent="1">
           <mxGeometry x="40" y="680" width="1100" height="80" as="geometry" />
         </mxCell>
       </root>

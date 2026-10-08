@@ -28,10 +28,11 @@ documents, writes a reply using only what those documents actually say,
 and leaves it as a draft for a person to read and send, it never sends
 anything on its own. If the message mentions a product defect, or the
 system just isn't confident enough in its read, it skips drafting
-entirely and routes it straight to a person instead. Either way, the
-decision and the reasoning behind it show up as a plain-language row on
-a shared board anyone on the team can check without touching any code,
-not buried in logs.
+entirely and routes it straight to a person instead, and posts an
+immediate Slack alert so that doesn't sit unnoticed in a queue. Either
+way, the decision and the reasoning behind it show up as a
+plain-language row on a shared board anyone on the team can check
+without touching any code, not buried in logs.
 
 The system plugs into real Gmail and real monday.com accounts (not
 local mocks), and it's built to swap the AI model behind it without

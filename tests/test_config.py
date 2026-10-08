@@ -45,6 +45,17 @@ def test_groq_provider_requires_groq_api_key_not_anthropic(required_env, monkeyp
     assert settings.groq_api_key == "test-groq-key"
 
 
+def test_slack_webhook_url_is_optional_and_defaults_to_empty(required_env):
+    settings = load_settings(env_file=None)
+    assert settings.slack_webhook_url == ""
+
+
+def test_slack_webhook_url_is_picked_up_when_set(required_env, monkeypatch):
+    monkeypatch.setenv("SLACK_WEBHOOK_URL", "https://hooks.slack.test/abc")
+    settings = load_settings(env_file=None)
+    assert settings.slack_webhook_url == "https://hooks.slack.test/abc"
+
+
 def test_fails_fast_on_unknown_llm_provider(required_env, monkeypatch):
     monkeypatch.setenv("LLM_PROVIDER", "not-a-real-provider")
 

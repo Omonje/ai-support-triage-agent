@@ -119,6 +119,17 @@ fast with a clear message if any are missing.
 - Depends on a person behaving well in one place: a human must actually
   review and send (or not send) each draft. The system never auto-sends.
 
+## Addendum (2026-10-08): Slack alerting
+While preparing the case study, a real gap surfaced: the system had no
+push notification at all, a human had to proactively check the
+monday.com board or Gmail Drafts folder to notice anything, including
+an escalated defect complaint. Added an optional Slack incoming
+webhook (DECISIONS.md #8): one immediate alert per escalation, one
+summary alert per run for routine drafts. Built test-first (10 new
+tests: 3 for the gateway, 5 for the pipeline wiring, 2 for config),
+105 total unit tests passing. Best-effort by design, a Slack outage
+never blocks or undoes an escalation, draft, or monday.com write.
+
 ## Gate log
 - Gate 1 approved: 2026-10-02
 - Gate 2 approved:

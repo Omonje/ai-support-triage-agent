@@ -62,6 +62,17 @@ class _FakeMondayGateway:
         return f"item_for_{record.gmail_message_id}"
 
 
+class _FakeSlackGateway:
+    def __init__(self, fail: bool = False):
+        self._fail = fail
+        self.alerts_sent = []
+
+    def send_alert(self, text):
+        self.alerts_sent.append(text)
+        if self._fail:
+            raise RuntimeError("slack webhook down")
+
+
 _KB_ARTICLES = [
     Article(id="defect_process", title="Defect Process", content="Start a defect claim within 14 days."),
     Article(id="shipping_policy", title="Shipping Policy", content="Standard orders ship in 3-5 days."),
@@ -235,3 +246,112 @@ def test_a_failed_message_is_not_marked_processed_so_it_retries_next_run():
 
     assert gmail.marked_processed == []
     assert monday.created_records == []
+
+
+def test_escalation_sends_a_slack_alert_with_subject_sender_and_reason():
+    claude = _FakeClaudeGateway(
+        RawClassification(intent="defect_complaint", urgency="high", confidence=0.95, reasoning="broken part")
+    )
+    gmail = _FakeGmailGateway({"m1": _message(subject="Cracked housing")})
+    monday = _FakeMondayGateway()
+    slack = _FakeSlackGateway()
+
+    process_new_messages(
+        gmail_gateway=gmail,
+        llm_gateway=claude,
+        monday_gateway=monday,
+        kb_articles=_KB_ARTICLES,
+        confidence_threshold=0.6,
+        slack_gateway=slack,
+    )
+
+    assert len(slack.alerts_sent) == 1
+    assert "Cracked housing" in slack.alerts_sent[0]
+    assert "a@b.com" in slack.alerts_sent[0]
+
+
+def test_non_escalated_run_sends_only_the_summary_alert_not_an_escalation_alert():
+    claude = _FakeClaudeGateway(
+        RawClassification(intent="order_status", urgency="low", confidence=0.9, reasoning="ok")
+    )
+    gmail = _FakeGmailGateway({"m1": _message()})
+    monday = _FakeMondayGateway()
+    slack = _FakeSlackGateway()
+
+    process_new_messages(
+        gmail_gateway=gmail,
+        llm_gateway=claude,
+        monday_gateway=monday,
+        kb_articles=_KB_ARTICLES,
+        confidence_threshold=0.6,
+        slack_gateway=slack,
+    )
+
+    assert slack.alerts_sent == ["1 draft reply ready for review on the monday.com board."]
+
+
+def test_no_alert_sent_at_all_when_no_slack_gateway_provided():
+    claude = _FakeClaudeGateway(
+        RawClassification(intent="defect_complaint", urgency="high", confidence=0.95, reasoning="broken part")
+    )
+    gmail = _FakeGmailGateway({"m1": _message()})
+    monday = _FakeMondayGateway()
+
+    results, failures = process_new_messages(
+        gmail_gateway=gmail,
+        llm_gateway=claude,
+        monday_gateway=monday,
+        kb_articles=_KB_ARTICLES,
+        confidence_threshold=0.6,
+    )
+
+    assert results[0].escalated is True
+    assert failures == []
+
+
+def test_a_failing_slack_alert_does_not_fail_the_escalation_itself():
+    claude = _FakeClaudeGateway(
+        RawClassification(intent="defect_complaint", urgency="high", confidence=0.95, reasoning="broken part")
+    )
+    gmail = _FakeGmailGateway({"m1": _message()})
+    monday = _FakeMondayGateway()
+    slack = _FakeSlackGateway(fail=True)
+
+    results, failures = process_new_messages(
+        gmail_gateway=gmail,
+        llm_gateway=claude,
+        monday_gateway=monday,
+        kb_articles=_KB_ARTICLES,
+        confidence_threshold=0.6,
+        slack_gateway=slack,
+    )
+
+    assert failures == []
+    assert results[0].escalated is True
+    assert monday.created_records[0].status == "Escalated - Needs Human"
+    assert gmail.marked_processed == ["m1"]
+
+
+def test_summary_alert_covers_every_draft_created_in_the_run():
+    claude = _FakeClaudeGateway(
+        RawClassification(intent="quote_request", urgency="low", confidence=0.8, reasoning="asking for a quote")
+    )
+    gmail = _FakeGmailGateway(
+        {
+            "m1": _message("m1", "Quote please", "Need a quote"),
+            "m2": _message("m2", "Another quote", "Need another quote"),
+        }
+    )
+    monday = _FakeMondayGateway()
+    slack = _FakeSlackGateway()
+
+    process_new_messages(
+        gmail_gateway=gmail,
+        llm_gateway=claude,
+        monday_gateway=monday,
+        kb_articles=_KB_ARTICLES,
+        confidence_threshold=0.6,
+        slack_gateway=slack,
+    )
+
+    assert slack.alerts_sent == ["2 draft replies ready for review on the monday.com board."]

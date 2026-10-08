@@ -11,6 +11,10 @@
    - monday.com: `MONDAY_API_TOKEN` (personal token from
      `https://<account>.monday.com/apps/manage/tokens`) and
      `MONDAY_BOARD_ID`.
+   - `SLACK_WEBHOOK_URL` (optional). If set, an escalation posts an
+     immediate alert and each run posts one summary alert for any
+     drafts created. If left blank, the pipeline runs exactly the same
+     with no alerts.
 3. `python -m scripts.check_gmail_connection` and
    `python -m scripts.check_monday_connection` to confirm both real
    connections work before touching the pipeline. First Gmail run opens
@@ -61,9 +65,13 @@ retried on the next run rather than left half-applied.
       whatever drafts currently exist.
 
 ## What is watched
-This is a portfolio demo run on demand, not a monitored production
-service, so there's no alerting pipeline. If this were handed to a real
-support team, the things worth watching are:
+This is a portfolio demo run on demand, not a continuously monitored
+production service. One real alert does exist: if `SLACK_WEBHOOK_URL`
+is set, an escalation posts immediately to Slack, and each run posts
+one summary line for any drafts created. There's no alerting beyond
+that (no monitoring of the pipeline process itself, no uptime check).
+If this were handed to a real support team, the things worth watching
+in addition are:
 
 | Number or check | Alert when | Who is told, and how |
 |---|---|---|

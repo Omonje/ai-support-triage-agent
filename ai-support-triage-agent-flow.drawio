@@ -1,117 +1,98 @@
-<mxfile host="app.diagrams.net" modified="2026-10-08T00:00:00.000Z" agent="claude-code" version="24.7.0" type="device">
+<mxfile host="app.diagrams.net" agent="claude-code">
   <diagram name="AI Support Triage Agent - Flow" id="triage-flow-1">
-    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="900" pageHeight="1500" math="0" shadow="0">
+    <mxGraphModel dx="1013" dy="463" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="900" pageHeight="1500" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-
-        <mxCell id="title" value="AI Support Triage Agent — Processing Flow" style="text;html=1;fontSize=20;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="200" y="10" width="500" height="30" as="geometry" />
+        <mxCell id="title" parent="1" style="text;html=1;fontSize=20;fontStyle=1;align=center;verticalAlign=middle;" value="AI Support Triage Agent — Processing Flow" vertex="1">
+          <mxGeometry height="30" width="500" x="200" y="10" as="geometry" />
         </mxCell>
-
-        <mxCell id="n1" value="New message arrives&#10;(Gmail, under the Triage-Demo label)" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="300" y="60" width="240" height="60" as="geometry" />
+        <mxCell id="n1" parent="1" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" value="New message arrives&#xa;(Gmail, under the Triage-Demo label)" vertex="1">
+          <mxGeometry height="60" width="240" x="300" y="60" as="geometry" />
         </mxCell>
-
-        <mxCell id="n2" value="Classify message&#10;(LLM gateway: Claude / Gemini / Groq —&#10;intent, urgency, confidence)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="300" y="160" width="240" height="70" as="geometry" />
+        <mxCell id="n2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" value="Classify message&#xa;(LLM gateway: Claude / Gemini / Groq —&#xa;intent, urgency, confidence)" vertex="1">
+          <mxGeometry height="70" width="240" x="300" y="160" as="geometry" />
         </mxCell>
-
-        <mxCell id="n3" value="Escalate?&#10;(defect_complaint, OR&#10;confidence &lt; threshold)" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="305" y="270" width="230" height="110" as="geometry" />
+        <mxCell id="n3" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" value="Escalate?&#xa;(defect_complaint, OR&#xa;confidence &lt; threshold)" vertex="1">
+          <mxGeometry height="110" width="230" x="305" y="270" as="geometry" />
         </mxCell>
-
-        <mxCell id="n4" value="Retrieve top-matching KB article&#10;(TF-IDF + cosine similarity)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="300" y="420" width="240" height="60" as="geometry" />
+        <mxCell id="n4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" value="Retrieve top-matching KB article&#xa;(TF-IDF + cosine similarity)" vertex="1">
+          <mxGeometry height="60" width="240" x="300" y="420" as="geometry" />
         </mxCell>
-
-        <mxCell id="n5" value="Draft reply grounded ONLY in&#10;the retrieved KB content (LLM gateway)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="300" y="520" width="240" height="60" as="geometry" />
+        <mxCell id="n5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" value="Draft reply grounded ONLY in&#xa;the retrieved KB content (LLM gateway)" vertex="1">
+          <mxGeometry height="60" width="240" x="300" y="520" as="geometry" />
         </mxCell>
-
-        <mxCell id="n6" value="Create a real Gmail draft&#10;(never auto-sent)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="300" y="620" width="240" height="60" as="geometry" />
+        <mxCell id="n6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" value="Create a real Gmail draft&#xa;(never auto-sent)" vertex="1">
+          <mxGeometry height="60" width="240" x="300" y="620" as="geometry" />
         </mxCell>
-
-        <mxCell id="n7" value="Create monday.com item&#10;status = Draft Ready for Approval" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="300" y="720" width="240" height="60" as="geometry" />
+        <mxCell id="n7" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" value="Create monday.com item&#xa;status = Draft Ready for Approval" vertex="1">
+          <mxGeometry height="60" width="240" x="300" y="720" as="geometry" />
         </mxCell>
-
-        <mxCell id="n8" value="Mark Gmail message Processed&#10;(so it's never reprocessed)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="300" y="820" width="240" height="60" as="geometry" />
+        <mxCell id="n8" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" value="Mark Gmail message Processed&#xa;(so it&#39;s never reprocessed)" vertex="1">
+          <mxGeometry height="60" width="240" x="300" y="820" as="geometry" />
         </mxCell>
-
-        <mxCell id="n9" value="Human reviews the draft&#10;in Gmail's Drafts folder" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="300" y="920" width="240" height="60" as="geometry" />
+        <mxCell id="n9" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" value="Human reviews the draft&#xa;in Gmail&#39;s Drafts folder" vertex="1">
+          <mxGeometry height="60" width="240" x="300" y="920" as="geometry" />
         </mxCell>
-
-        <mxCell id="n10" value="Human sends it?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="330" y="1020" width="180" height="90" as="geometry" />
+        <mxCell id="n10" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" value="Human sends it?" vertex="1">
+          <mxGeometry height="90" width="180" x="330" y="1020" as="geometry" />
         </mxCell>
-
-        <mxCell id="n11" value="Next sent-detection poll checks the&#10;draft's underlying message labels&#10;(DRAFT gone, SENT present)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="300" y="1150" width="240" height="70" as="geometry" />
+        <mxCell id="n11" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" value="Next sent-detection poll checks the&#xa;draft&#39;s underlying message labels&#xa;(DRAFT gone, SENT present)" vertex="1">
+          <mxGeometry height="70" width="240" x="300" y="1150" as="geometry" />
         </mxCell>
-
-        <mxCell id="n12" value="Update monday.com item&#10;status = Sent" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="300" y="1260" width="240" height="60" as="geometry" />
+        <mxCell id="n12" parent="1" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" value="Update monday.com item&#xa;status = Sent" vertex="1">
+          <mxGeometry height="60" width="240" x="300" y="1260" as="geometry" />
         </mxCell>
-
-        <mxCell id="e1" value="Apply the Needs-Human&#10;Gmail label" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="620" y="420" width="220" height="60" as="geometry" />
+        <mxCell id="e1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" value="Apply the Needs-Human&#xa;Gmail label" vertex="1">
+          <mxGeometry height="60" width="220" x="620" y="420" as="geometry" />
         </mxCell>
-
-        <mxCell id="e2" value="Create monday.com item&#10;status = Escalated - Needs Human" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="620" y="520" width="220" height="60" as="geometry" />
+        <mxCell id="e2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" value="Create monday.com item&#xa;status = Escalated - Needs Human" vertex="1">
+          <mxGeometry height="60" width="220" x="620" y="520" as="geometry" />
         </mxCell>
-
-        <mxCell id="e3" value="Mark Gmail message Processed" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="620" y="620" width="220" height="60" as="geometry" />
+        <mxCell id="e3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" value="Mark Gmail message Processed" vertex="1">
+          <mxGeometry height="60" width="220" x="620" y="800" as="geometry" />
         </mxCell>
-
-        <mxCell id="e4" value="Human handles it directly in Gmail&#10;(no AI draft is ever generated)" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="620" y="720" width="220" height="60" as="geometry" />
+        <mxCell id="e4" parent="1" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" value="Human handles it directly in Gmail&#xa;(no AI draft is ever generated)" vertex="1">
+          <mxGeometry height="60" width="220" x="620" y="970" as="geometry" />
         </mxCell>
-
-        <!-- Edges -->
-        <mxCell id="edge1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="n1" target="n2">
+        <mxCell id="edge1" edge="1" parent="1" source="n1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="n2">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="n2" target="n3">
+        <mxCell id="edge2" edge="1" parent="1" source="n2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="n3">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge3" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="n3" target="n4">
+        <mxCell id="edge3" edge="1" parent="1" source="n3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="n4" value="No">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge4" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="n3" target="e1">
+        <mxCell id="edge4" edge="1" parent="1" source="n3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="e1" value="Yes">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="730" y="325" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="edge5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="n4" target="n5">
+        <mxCell id="edge5" edge="1" parent="1" source="n4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="n5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="n5" target="n6">
+        <mxCell id="edge6" edge="1" parent="1" source="n5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="n6">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="n6" target="n7">
+        <mxCell id="edge7" edge="1" parent="1" source="n6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="n7">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="n7" target="n8">
+        <mxCell id="edge8" edge="1" parent="1" source="n7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="n8">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="n8" target="n9">
+        <mxCell id="edge9" edge="1" parent="1" source="n8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="n9">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="n9" target="n10">
+        <mxCell id="edge10" edge="1" parent="1" source="n9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="n10">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge11" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="n10" target="n11">
+        <mxCell id="edge11" edge="1" parent="1" source="n10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="n11" value="Yes">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge12" value="Not yet" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;exitX=0;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="n10" target="n9">
+        <mxCell id="edge12" edge="1" parent="1" source="n10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;exitX=0;exitY=0.5;entryX=0;entryY=0.5;" target="n9" value="Not yet">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="260" y="1065" />
@@ -119,21 +100,32 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="edge13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="n11" target="n12">
+        <mxCell id="edge13" edge="1" parent="1" source="n11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="n12">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="e1" target="e2">
+        <mxCell id="edge14" edge="1" parent="1" source="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="e2">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="e2" target="e3">
+        <mxCell id="edge15" edge="1" parent="1" source="slackbox" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="e3">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="e3" target="e4">
+        <mxCell id="edge16" edge="1" parent="1" source="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="e4">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-
-        <mxCell id="legend" value="Green = start   |   Blue = normal (drafted) path   |   Red = escalation path   |   Orange = decision point   |   Yellow = human action   |   Gray = end" style="text;html=1;fontSize=11;fontStyle=2;align=center;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="200" y="1350" width="500" height="30" as="geometry" />
+        <mxCell id="legend" parent="1" style="text;html=1;fontSize=11;fontStyle=2;align=center;verticalAlign=middle;" value="Green = start   |   Blue = normal (drafted) path   |   Red = escalation path   |   Orange = decision point   |   Yellow = human action   |   Gray = end" vertex="1">
+          <mxGeometry height="30" width="500" x="200" y="1350" as="geometry" />
+        </mxCell>
+        <mxCell id="slackbox" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" value="Send Slack alert&#xa;(immediate, best-effort)" vertex="1">
+          <mxGeometry height="60" width="220" x="630" y="630" as="geometry" />
+        </mxCell>
+        <mxCell id="jZl2vjabJvVZjfJ8XKd_-2" edge="1" parent="1" source="e2" target="slackbox" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="slacknote" parent="1" style="text;html=1;fontSize=10;fontStyle=2;align=left;verticalAlign=middle;" value="If Slack fails to send, the escalation label, the monday.com item,&#xa;and marking the message processed all still happen, only the alert is skipped." vertex="1">
+          <mxGeometry height="40" width="260" x="620" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="draftnote" parent="1" style="text;html=1;fontSize=10;fontStyle=2;align=left;verticalAlign=middle;" value="Drafted messages don't alert individually. One summary Slack&#xa;alert (&quot;N draft replies ready for review&quot;) fires once per full&#xa;pipeline run, after every message in the batch is processed." vertex="1">
+          <mxGeometry height="50" width="260" x="40" y="830" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

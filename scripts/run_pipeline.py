@@ -12,6 +12,7 @@ from app.gateways.gmail_auth import build_gmail_service
 from app.gateways.gmail_gateway import GmailGateway
 from app.gateways.knowledge_base_repo import load_articles
 from app.gateways.monday_gateway import MondayGateway
+from app.gateways.slack_gateway import SlackGateway
 from app.service.pipeline import process_new_messages
 
 
@@ -63,12 +64,17 @@ def main() -> None:
     monday_gateway = MondayGateway(api_token=settings.monday_api_token, board_id=settings.monday_board_id)
     kb_articles = load_articles()
 
+    slack_gateway = SlackGateway(webhook_url=settings.slack_webhook_url) if settings.slack_webhook_url else None
+    if slack_gateway is None:
+        print("SLACK_WEBHOOK_URL not set, running without Slack alerts.")
+
     results, failures = process_new_messages(
         gmail_gateway=gmail_gateway,
         llm_gateway=llm_gateway,
         monday_gateway=monday_gateway,
         kb_articles=kb_articles,
         confidence_threshold=settings.confidence_escalation_threshold,
+        slack_gateway=slack_gateway,
     )
 
     print(f"Processed {len(results)} message(s), {len(failures)} failure(s).")

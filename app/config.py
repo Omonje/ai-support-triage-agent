@@ -33,6 +33,7 @@ class Settings:
     gmail_escalation_label: str
     monday_api_token: str
     monday_board_id: str
+    slack_webhook_url: str
     inbox_poll_interval_seconds: int
     sent_check_poll_interval_seconds: int
     confidence_escalation_threshold: float
@@ -78,6 +79,7 @@ def load_settings(env_file: str | None = ".env") -> Settings:
         gmail_escalation_label=os.getenv("GMAIL_ESCALATION_LABEL", "Needs-Human"),
         monday_api_token=os.environ["MONDAY_API_TOKEN"],
         monday_board_id=os.environ["MONDAY_BOARD_ID"],
+        slack_webhook_url=os.getenv("SLACK_WEBHOOK_URL", ""),
         inbox_poll_interval_seconds=int(os.getenv("INBOX_POLL_INTERVAL_SECONDS", "120")),
         sent_check_poll_interval_seconds=int(
             os.getenv("SENT_CHECK_POLL_INTERVAL_SECONDS", "300")

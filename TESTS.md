@@ -22,6 +22,9 @@
 | Pipeline (message in -> classify/escalate/draft -> monday item -> marked processed) | Service layer, all three gateways faked | unit | written, 7 tests passing (2026-10-05/06), includes one-message-fails-rest-continue and failed-message-not-marked-processed |
 | Retry-with-backoff on a transient LLM API failure | `app/gateways/retry.py` | unit | written, 4 tests passing, confirmed real: caught an actual Gemini 503 in production use 2026-10-06 that prompted building this | |
 | Groq gateway (classify/draft against the shared interface) | Repository layer, fake Groq client | unit | written, 9 tests passing (2026-10-08), mirrors test_gemini_gateway.py |
+| Slack gateway (send_alert against a webhook) | Repository layer, fake HTTP post | unit | written, 3 tests passing (2026-10-08) |
+| Pipeline sends a Slack alert on escalation, and one summary alert per run for drafts (not one per message); a Slack failure never fails the underlying escalation/draft work | Service layer, all gateways faked | unit | written, 5 tests passing (2026-10-08) |
+| Config: SLACK_WEBHOOK_URL is optional, defaults to empty | `app/config.py` | unit | written, 2 tests passing (2026-10-08) |
 | Whole pipeline, real run against all 18 seeded messages, real Gemini + Gmail + monday.com | Full path | integration | Gemini attempted twice (2026-10-06, 2026-10-08), blocked both times by the free tier's 20/day cap (see LOG.md and DECISIONS.md #7); completed 2026-10-08 after switching to Groq (openai/gpt-oss-120b), all 18 messages processed with 0 failures |
 
 ## Deliberate-breakage check
@@ -47,7 +50,7 @@ Full suite re-run clean afterward (94 passed), confirming the breaks were fully 
 
 ## Results (exact numbers, with the date)
 - Date: 2026-10-08
-- Unit tests: 95 passing (full suite, `pytest -q`), runs in ~2s
+- Unit tests: 105 passing (full suite, `pytest -q`), runs in ~1.6s (updated 2026-10-08 after adding Slack alerting)
 - Integration tests: Gmail connectivity, monday.com connectivity, closed-loop sent-detection (14 pending drafts found and correctly checked), and the full pipeline real run (18/18 messages processed: 14 drafted, 4 escalated, 0 failures) all passed against live accounts
 - Deliberate breaks caught: 5/5 (see table above)
 - Load test (shape of results and its limits): not applicable at demo scale, note in RUNBOOK.md instead
