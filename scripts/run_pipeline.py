@@ -13,7 +13,13 @@ from app.gateways.gmail_gateway import GmailGateway
 from app.gateways.knowledge_base_repo import load_articles
 from app.gateways.monday_gateway import MondayGateway
 from app.gateways.slack_gateway import SlackGateway
+from app.logging_setup import configure_logging, get_logger
 from app.service.pipeline import process_new_messages
+
+LOG_FILE = "pipeline.log"
+
+configure_logging(log_file=LOG_FILE)
+logger = get_logger(__name__)
 
 
 def _build_llm_gateway(settings):
@@ -48,7 +54,11 @@ def _build_llm_gateway(settings):
 
 
 def main() -> None:
-    settings = load_settings()
+    try:
+        settings = load_settings()
+    except ConfigError as exc:
+        logger.error("Startup config check failed: %s", exc.message)
+        raise
 
     llm_gateway = _build_llm_gateway(settings)
     print(f"Using LLM provider: {settings.llm_provider}")
@@ -78,13 +88,16 @@ def main() -> None:
     )
 
     print(f"Processed {len(results)} message(s), {len(failures)} failure(s).")
+    logger.info("Run complete: %d processed, %d failed", len(results), len(failures))
     for result in results:
         marker = "ESCALATED" if result.escalated else "DRAFTED "
         print(f"  [{marker}] {result.gmail_message_id} -> monday item {result.monday_item_id} ({result.status})")
     for failure in failures:
         print(f"  [FAILED  ] {failure.gmail_message_id}: {failure.error}")
+        logger.error("Message %s failed: %s", failure.gmail_message_id, failure.error)
     if failures:
         print("\nFailed messages were NOT marked processed, re-run this script to retry them.")
+        print(f"See {LOG_FILE} for a durable, timestamped record of this run.")
 
 
 if __name__ == "__main__":

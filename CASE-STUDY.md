@@ -41,7 +41,7 @@ vendor.
 
 ## What happened when it actually ran
 
-Built test-first: 95 automated tests, every piece of business logic
+Built test-first: 107 automated tests, every piece of business logic
 proven before being wired to a real account. Then run for real against
 18 synthetic support messages covering order status, shipping delays,
 quote requests, and defect complaints, through real Gmail and real
@@ -55,15 +55,21 @@ Two of those were sent manually during testing, and the system
 correctly updated their status on the board within one check, closing
 the loop without anyone touching it by hand.
 
-Two real problems came up while proving this against live accounts,
-not a lab setup: a free AI tier's daily request limit that looked fine
-on paper but wasn't enough for a full run (fixed by making the AI
-provider swappable, a second real adapter added without touching any
-business logic), and a quirk in how monday.com's own filtering worked
-against its documented behavior (found, fixed, and covered by a new
-test so it can't silently come back). Both are written up in detail
-behind the scenes, nothing about this build was a clean, first-try
-demo, and that's worth saying plainly rather than hiding.
+Several real problems came up while proving this against live
+accounts, not a lab setup: a free AI tier's daily request limit that
+looked fine on paper but wasn't enough for a full run (fixed by making
+the AI provider swappable, a second real adapter added without
+touching any business logic), a quirk in how monday.com's own
+filtering worked against its documented behavior, and Gmail not
+actually marking a draft as gone the moment it's sent, the way the
+first version assumed. Each was found, fixed, and covered by a new
+test so it can't silently come back. A later review question, "how
+does the team know when something needs their attention," also turned
+up a real gap: nothing had been pushing a notification at all, closed
+the same way, test-first, with a Slack alert for escalations, drafts,
+and run failures alike, plus a durable log file for anyone checking
+after the fact. Nothing about this build was a clean, first-try demo,
+and that's worth saying plainly rather than hiding.
 
 What this isn't: a live deployment handling real customer data. The
 manufacturer, its support team, and every message are invented for this

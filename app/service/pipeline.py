@@ -124,6 +124,7 @@ def process_new_messages(
             )
             results.append(result)
         except Exception as exc:
+            logger.warning("Message %s failed to process: %s", message_id, exc)
             failures.append(ProcessingFailure(gmail_message_id=message_id, error=str(exc)))
 
     drafted_count = sum(1 for r in results if not r.escalated)
@@ -131,6 +132,13 @@ def process_new_messages(
         noun = "draft reply" if drafted_count == 1 else "draft replies"
         _send_alert_best_effort(
             slack_gateway, f"{drafted_count} {noun} ready for review on the monday.com board."
+        )
+
+    if slack_gateway is not None and failures:
+        lines = "\n".join(f"- {f.gmail_message_id}: {f.error}" for f in failures)
+        _send_alert_best_effort(
+            slack_gateway,
+            f"{len(failures)} message(s) failed during this run, will retry next run:\n{lines}",
         )
 
     return results, failures

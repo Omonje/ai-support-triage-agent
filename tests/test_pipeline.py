@@ -355,3 +355,52 @@ def test_summary_alert_covers_every_draft_created_in_the_run():
     )
 
     assert slack.alerts_sent == ["2 draft replies ready for review on the monday.com board."]
+
+
+def test_failures_send_a_summary_alert_listing_each_one():
+    claude = _FakeClaudeGateway(
+        RawClassification(intent="order_status", urgency="low", confidence=0.9, reasoning="ok"),
+        fail_for_message_ids={"Fails here"},
+    )
+    gmail = _FakeGmailGateway(
+        {
+            "m1": _message("m1", "Fine subject", "body"),
+            "m2": _message("m2", "Fails here", "this one blows up"),
+        }
+    )
+    monday = _FakeMondayGateway()
+    slack = _FakeSlackGateway()
+
+    process_new_messages(
+        gmail_gateway=gmail,
+        llm_gateway=claude,
+        monday_gateway=monday,
+        kb_articles=_KB_ARTICLES,
+        confidence_threshold=0.6,
+        slack_gateway=slack,
+    )
+
+    failure_alerts = [a for a in slack.alerts_sent if "failed" in a]
+    assert len(failure_alerts) == 1
+    assert "1 message(s) failed" in failure_alerts[0]
+    assert "m2" in failure_alerts[0]
+
+
+def test_no_failure_alert_when_nothing_failed():
+    claude = _FakeClaudeGateway(
+        RawClassification(intent="order_status", urgency="low", confidence=0.9, reasoning="ok")
+    )
+    gmail = _FakeGmailGateway({"m1": _message()})
+    monday = _FakeMondayGateway()
+    slack = _FakeSlackGateway()
+
+    process_new_messages(
+        gmail_gateway=gmail,
+        llm_gateway=claude,
+        monday_gateway=monday,
+        kb_articles=_KB_ARTICLES,
+        confidence_threshold=0.6,
+        slack_gateway=slack,
+    )
+
+    assert not any("failed" in a for a in slack.alerts_sent)

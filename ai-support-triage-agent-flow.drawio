@@ -127,6 +127,9 @@
         <mxCell id="draftnote" parent="1" style="text;html=1;fontSize=10;fontStyle=2;align=left;verticalAlign=middle;" value="Drafted messages don't alert individually. One summary Slack&#xa;alert (&quot;N draft replies ready for review&quot;) fires once per full&#xa;pipeline run, after every message in the batch is processed." vertex="1">
           <mxGeometry height="50" width="260" x="40" y="830" as="geometry" />
         </mxCell>
+        <mxCell id="failbox" parent="1" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;" value="If any step above fails (an API error), the whole&#xa;message is caught and logged to pipeline.log.&#xa;Not marked Processed, so it retries automatically&#xa;next run. If Slack is configured, every failed&#xa;message is listed in one summary alert at the&#xa;end of the run (not shown as a separate path here,&#xa;it can happen at any step from Classify onward)." vertex="1">
+          <mxGeometry height="130" width="260" x="620" y="160" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>

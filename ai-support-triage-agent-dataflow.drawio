@@ -28,6 +28,9 @@
         <mxCell id="slack" value="Slack&#xa;incoming webhook (optional)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="900" y="560" width="240" height="70" as="geometry" />
         </mxCell>
+        <mxCell id="log" value="pipeline.log&#xa;(local file)" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;fontStyle=1;boundedLbl=1;" vertex="1" parent="1">
+          <mxGeometry x="260" y="560" width="160" height="90" as="geometry" />
+        </mxCell>
         <!-- Gmail <-> Worker -->
         <mxCell id="eg1" value="new message in&#xa;(subject, body, sender)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="gmail" target="worker">
           <mxGeometry relative="1" as="geometry" />
@@ -77,10 +80,13 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="es1" value="escalation alert (immediate) /&#xa;summary alert (drafts, once per run)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;" edge="1" parent="1" source="worker" target="slack">
+        <mxCell id="es1" value="escalation alert (immediate) /&#xa;summary alerts (drafts + failures, once per run)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;" edge="1" parent="1" source="worker" target="slack">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="note" value="The LLM gateway is swappable (Claude, Gemini, or Groq) behind one shared interface, the Worker and every other box never know which one answered. Gmail access is scoped to the Triage-Demo label only, nothing else in the account is read or changed. The agent only ever creates a Gmail draft, it never sends. Slack alerting is optional and one-way: if it fails, the escalation label, the monday.com item, and marking the message processed all still happen, only the alert is skipped. Every message in this demo is synthetic, no real customer data touches this system." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;align=left;verticalAlign=middle;spacing=10;" vertex="1" parent="1">
+        <mxCell id="el3" value="warnings, errors, run summary&#xa;(JSON, timestamped)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;" edge="1" parent="1" source="worker" target="log">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="note" value="The LLM gateway is swappable (Claude, Gemini, or Groq) behind one shared interface, the Worker and every other box never know which one answered. Gmail access is scoped to the Triage-Demo label only, nothing else in the account is read or changed. The agent only ever creates a Gmail draft, it never sends. Slack alerting is optional and one-way: if it fails, the escalation label, the monday.com item, and marking the message processed all still happen, only the alert is skipped. Every run also writes a durable log file regardless of whether Slack is configured. Every message in this demo is synthetic, no real customer data touches this system." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;align=left;verticalAlign=middle;spacing=10;" vertex="1" parent="1">
           <mxGeometry x="40" y="680" width="1100" height="80" as="geometry" />
         </mxCell>
       </root>

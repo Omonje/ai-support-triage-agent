@@ -130,6 +130,17 @@ tests: 3 for the gateway, 5 for the pipeline wiring, 2 for config),
 105 total unit tests passing. Best-effort by design, a Slack outage
 never blocks or undoes an escalation, draft, or monday.com write.
 
+## Addendum (2026-10-08): pipeline-failure visibility
+A follow-up question exposed a second gap: a whole-run failure (the
+LLM provider down, which happened twice in testing) produced only
+console output nobody but someone actively watching would see, and the
+structured JSON logger already built (`app/logging_setup.py`) was only
+wired into the unused FastAPI health-check stub, never into the script
+that actually runs. Closed both (DECISIONS.md #9): a third Slack alert
+type summarizing every failed message at the end of a run, and
+`run_pipeline.py` now writes durable, timestamped log lines to
+`pipeline.log`. 2 more tests, 107 total unit tests passing.
+
 ## Gate log
 - Gate 1 approved: 2026-10-02
 - Gate 2 approved:
