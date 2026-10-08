@@ -16,6 +16,7 @@ _ALWAYS_REQUIRED = ["MONDAY_API_TOKEN", "MONDAY_BOARD_ID"]
 _PROVIDER_KEY_ENV_VAR = {
     "claude": "ANTHROPIC_API_KEY",
     "gemini": "GOOGLE_API_KEY",
+    "groq": "GROQ_API_KEY",
 }
 
 
@@ -24,6 +25,7 @@ class Settings:
     llm_provider: str
     anthropic_api_key: str
     google_api_key: str
+    groq_api_key: str
     gmail_oauth_client_path: str
     gmail_token_cache_path: str
     gmail_label: str
@@ -68,6 +70,7 @@ def load_settings(env_file: str | None = ".env") -> Settings:
         llm_provider=llm_provider,
         anthropic_api_key=os.getenv("ANTHROPIC_API_KEY", ""),
         google_api_key=os.getenv("GOOGLE_API_KEY", ""),
+        groq_api_key=os.getenv("GROQ_API_KEY", ""),
         gmail_oauth_client_path=os.getenv("GMAIL_OAUTH_CLIENT_PATH", "credentials.json"),
         gmail_token_cache_path=os.getenv("GMAIL_TOKEN_CACHE_PATH", "gmail_token.json"),
         gmail_label=os.getenv("GMAIL_LABEL", "Triage-Demo"),

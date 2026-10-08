@@ -30,8 +30,18 @@ def _build_llm_gateway(settings):
 
         from app.gateways.gemini_gateway import GeminiGateway
 
-        model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+        model = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
         return GeminiGateway(genai.Client(api_key=settings.google_api_key), model=model)
+
+    if settings.llm_provider == "groq":
+        import os
+
+        from groq import Groq
+
+        from app.gateways.groq_gateway import GroqGateway
+
+        model = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
+        return GroqGateway(Groq(api_key=settings.groq_api_key), model=model)
 
     raise ConfigError(f"No gateway wired up for LLM_PROVIDER={settings.llm_provider!r}")
 

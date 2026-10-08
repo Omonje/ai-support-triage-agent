@@ -32,6 +32,19 @@ def test_gemini_provider_requires_google_api_key_not_anthropic(required_env, mon
     assert settings.google_api_key == "test-google-key"
 
 
+def test_groq_provider_requires_groq_api_key_not_anthropic(required_env, monkeypatch):
+    monkeypatch.setenv("LLM_PROVIDER", "groq")
+    monkeypatch.delenv("ANTHROPIC_API_KEY")
+
+    with pytest.raises(ConfigError, match="GROQ_API_KEY"):
+        load_settings(env_file=None)
+
+    monkeypatch.setenv("GROQ_API_KEY", "test-groq-key")
+    settings = load_settings(env_file=None)
+    assert settings.llm_provider == "groq"
+    assert settings.groq_api_key == "test-groq-key"
+
+
 def test_fails_fast_on_unknown_llm_provider(required_env, monkeypatch):
     monkeypatch.setenv("LLM_PROVIDER", "not-a-real-provider")
 

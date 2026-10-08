@@ -110,8 +110,20 @@ def test_list_items_with_status_returns_item_id_and_draft_id():
                     {
                         "items_page": {
                             "items": [
-                                {"id": "item_1", "column_values": [{"text": "draft_a"}]},
-                                {"id": "item_2", "column_values": [{"text": "draft_b"}]},
+                                {
+                                    "id": "item_1",
+                                    "column_values": [
+                                        {"id": "color_mm7tjn17", "text": "Draft Ready for Approval"},
+                                        {"id": "text_mm7tsys9", "text": "draft_a"},
+                                    ],
+                                },
+                                {
+                                    "id": "item_2",
+                                    "column_values": [
+                                        {"id": "color_mm7tjn17", "text": "Draft Ready for Approval"},
+                                        {"id": "text_mm7tsys9", "text": "draft_b"},
+                                    ],
+                                },
                             ]
                         }
                     }
@@ -126,6 +138,57 @@ def test_list_items_with_status_returns_item_id_and_draft_id():
     assert items == [
         {"item_id": "item_1", "gmail_draft_id": "draft_a"},
         {"item_id": "item_2", "gmail_draft_id": "draft_b"},
+    ]
+
+
+def test_list_items_with_status_filters_out_items_with_a_different_status():
+    """Regression test: monday's own query_params status filter needs the
+    internal numeric index, not the label text, so filtering must happen
+    client-side on the returned text instead. Caught 2026-10-08 when a real
+    board with real items of mixed status came back empty despite matching
+    items existing (DECISIONS.md, LOG.md)."""
+    http_post = _FakeHttpPost(
+        response_payload={
+            "data": {
+                "boards": [
+                    {
+                        "items_page": {
+                            "items": [
+                                {
+                                    "id": "item_1",
+                                    "column_values": [
+                                        {"id": "color_mm7tjn17", "text": "Draft Ready for Approval"},
+                                        {"id": "text_mm7tsys9", "text": "draft_a"},
+                                    ],
+                                },
+                                {
+                                    "id": "item_2",
+                                    "column_values": [
+                                        {"id": "color_mm7tjn17", "text": "Escalated - Needs Human"},
+                                        {"id": "text_mm7tsys9", "text": "draft_b"},
+                                    ],
+                                },
+                                {
+                                    "id": "item_3",
+                                    "column_values": [
+                                        {"id": "color_mm7tjn17", "text": "Draft Ready for Approval"},
+                                        {"id": "text_mm7tsys9", "text": "draft_c"},
+                                    ],
+                                },
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    )
+    gateway = MondayGateway(http_post=http_post, api_token="token", board_id="18433915127")
+
+    items = gateway.list_items_with_status("Draft Ready for Approval")
+
+    assert items == [
+        {"item_id": "item_1", "gmail_draft_id": "draft_a"},
+        {"item_id": "item_3", "gmail_draft_id": "draft_c"},
     ]
 
 

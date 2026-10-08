@@ -37,14 +37,15 @@ mutation ($boardId: ID!, $itemId: ID!, $columnValues: JSON!) {
 }
 """
 
-_LIST_ITEMS_BY_STATUS_QUERY = (
+_LIST_ITEMS_QUERY = (
     """
-query ($boardId: ID!, $statusLabel: String!) {
+query ($boardId: ID!) {
   boards(ids: [$boardId]) {
-    items_page(query_params: {rules: [{column_id: "%s", compare_value: [$statusLabel], operator: any_of}]}) {
+    items_page(limit: 100) {
       items {
         id
-        column_values(ids: ["%s"]) {
+        column_values(ids: ["%s", "%s"]) {
+          id
           text
         }
       }
@@ -112,8 +113,13 @@ class MondayGateway:
         self._execute(_UPDATE_STATUS_MUTATION, variables)
 
     def list_items_with_status(self, status: str) -> list[dict]:
-        variables = {"boardId": self._board_id, "statusLabel": status}
-        data = self._execute(_LIST_ITEMS_BY_STATUS_QUERY, variables)
+        """Fetches every item and filters client-side on the status
+        column's text. monday's own query_params status filter needs the
+        column's internal numeric index, not the label text, so filtering
+        server-side silently returned nothing even for matching items
+        (caught 2026-10-08, see LOG.md)."""
+        variables = {"boardId": self._board_id}
+        data = self._execute(_LIST_ITEMS_QUERY, variables)
 
         boards = data.get("boards") or []
         if not boards:
@@ -122,9 +128,17 @@ class MondayGateway:
         items = boards[0]["items_page"]["items"]
         result = []
         for item in items:
-            column_values = item.get("column_values") or []
-            draft_id = column_values[0].get("text") if column_values else ""
-            result.append({"item_id": item["id"], "gmail_draft_id": draft_id or ""})
+            by_column_id = {
+                cv["id"]: cv.get("text") for cv in (item.get("column_values") or [])
+            }
+            if by_column_id.get(COLUMN_STATUS) != status:
+                continue
+            result.append(
+                {
+                    "item_id": item["id"],
+                    "gmail_draft_id": by_column_id.get(COLUMN_GMAIL_DRAFT_ID) or "",
+                }
+            )
         return result
 
     def _execute(self, query: str, variables: dict) -> dict:
