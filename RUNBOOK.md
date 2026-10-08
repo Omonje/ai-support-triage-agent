@@ -39,6 +39,12 @@ startup failed. To fix it:
    - monday.com: `MONDAY_API_TOKEN` (personal token from
      `https://<account>.monday.com/apps/manage/tokens`) and
      `MONDAY_BOARD_ID`.
+   - Supabase: `SUPABASE_URL` and `SUPABASE_SERVICE_KEY` (Project
+     Settings -> API in the Supabase dashboard, the `service_role` key,
+     not `anon`). Holds the knowledge-base articles; see
+     `scripts/migrate_kb_to_supabase.py` for the one-time migration
+     from `data/kb_articles.json` the first time a Supabase project is
+     set up.
    - `SLACK_WEBHOOK_URL` (optional). If set, an escalation posts an
      immediate alert, each run posts one summary alert for any drafts
      created, and one summary alert for any messages that failed. If
@@ -69,7 +75,7 @@ tier usage limits make 30 minutes the sensible cadence here, not 2 and
 5 minutes).
 
 ## Release steps
-1. `pytest -q` — full suite must pass (107 tests as of 2026-10-08).
+1. `pytest -q` — full suite must pass (116 tests as of 2026-10-08).
    The same suite also runs automatically in CI on every push.
 2. Run the two connectivity checks (step 3 above) against the real
    accounts, locally, if testing a change before pushing.

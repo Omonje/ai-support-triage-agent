@@ -40,11 +40,14 @@ touching any of that decision logic, so it isn't locked to one AI
 vendor. It's also deployed, not just runnable: it executes on its own
 schedule from GitHub Actions against the live accounts, with its own
 automated test suite running on every change, not a script someone
-has to remember to run from a laptop.
+has to remember to run from a laptop. The policy knowledge base it
+drafts from lives in a real hosted database (Supabase), not a file
+sitting on that laptop either, so a real team could view or edit the
+policy articles themselves without touching code.
 
 ## What happened when it actually ran
 
-Built test-first: 107 automated tests, every piece of business logic
+Built test-first: 116 automated tests, every piece of business logic
 proven before being wired to a real account. Then run for real against
 18 synthetic support messages covering order status, shipping delays,
 quote requests, and defect complaints, through real Gmail and real

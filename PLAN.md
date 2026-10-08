@@ -159,6 +159,17 @@ stays in Testing publishing status (the only realistic option short of
 an annual paid security audit); a startup failure now alerts via
 Slack instead of silently going quiet.
 
+## Addendum (2026-10-08): knowledge base moved to Supabase
+Same motivation as the GitHub Actions move: a knowledge base that only
+existed as a local JSON file undercut the "built like it's for a
+client" story. Added `SupabaseKBRepo` (DECISIONS.md #11), same thin-
+REST-gateway pattern as every other gateway, test-first (7 new tests),
+migrated all 15 articles for real via a one-time script, verified by
+reading them back from the live database. `SUPABASE_URL` and
+`SUPABASE_SERVICE_KEY` are now required config. 116 total unit tests
+passing. Confirmed with a real GitHub Actions run: clean startup,
+0 failures, entirely in the cloud.
+
 ## Gate log
 - Gate 1 approved: 2026-10-02
 - Gate 2 approved:

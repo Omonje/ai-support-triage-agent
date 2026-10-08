@@ -16,7 +16,7 @@
         <mxCell id="llm" value="LLM Gateway&#xa;Claude / Gemini / Groq (swappable)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="900" y="160" width="240" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="kb" value="Knowledge Base&#xa;15 policy articles&#xa;(local JSON file)" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;fontStyle=1;boundedLbl=1;" vertex="1" parent="1">
+        <mxCell id="kb" value="Knowledge Base&#xa;15 policy articles&#xa;Supabase (hosted Postgres)" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;fontStyle=1;boundedLbl=1;" vertex="1" parent="1">
           <mxGeometry x="500" y="380" width="160" height="90" as="geometry" />
         </mxCell>
         <mxCell id="monday" value="monday.com board&#xa;Support Triage Queue" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
@@ -54,10 +54,10 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <!-- Worker <-> KB -->
-        <mxCell id="ek1" value="query text" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.35;exitY=1;exitDx=0;exitDy=0;entryX=0.35;entryY=0;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="worker" target="kb">
+        <mxCell id="ek1" value="GET /rest/v1/kb_articles&#xa;(service_role key)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.35;exitY=1;exitDx=0;exitDy=0;entryX=0.35;entryY=0;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="worker" target="kb">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="ek2" value="top-matching article(s)&#xa;(title + policy text)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.65;exitY=0;exitDx=0;exitDy=0;entryX=0.65;entryY=1;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="kb" target="worker">
+        <mxCell id="ek2" value="all articles (id, title, content);&#xa;matched locally by TF-IDF" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.65;exitY=0;exitDx=0;exitDy=0;entryX=0.65;entryY=1;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="kb" target="worker">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <!-- Worker <-> monday.com -->
