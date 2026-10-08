@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from datetime import date
 
 from app.gateways.monday_gateway import TriageRecord
+from app.gateways.slack_gateway import send_alert_best_effort
 from app.logging_setup import get_logger
 from app.service.classification import classify
 from app.service.drafting import build_draft
@@ -53,7 +54,7 @@ def process_one_message(
         kb_articles_used = ""
         reasoning = decision.reason
         if slack_gateway is not None:
-            _send_alert_best_effort(
+            send_alert_best_effort(
                 slack_gateway,
                 f'Escalation needed: "{message.subject}" from {message.sender}\n'
                 f"Reason: {decision.reason}",
@@ -130,25 +131,15 @@ def process_new_messages(
     drafted_count = sum(1 for r in results if not r.escalated)
     if slack_gateway is not None and drafted_count > 0:
         noun = "draft reply" if drafted_count == 1 else "draft replies"
-        _send_alert_best_effort(
+        send_alert_best_effort(
             slack_gateway, f"{drafted_count} {noun} ready for review on the monday.com board."
         )
 
     if slack_gateway is not None and failures:
         lines = "\n".join(f"- {f.gmail_message_id}: {f.error}" for f in failures)
-        _send_alert_best_effort(
+        send_alert_best_effort(
             slack_gateway,
             f"{len(failures)} message(s) failed during this run, will retry next run:\n{lines}",
         )
 
     return results, failures
-
-
-def _send_alert_best_effort(slack_gateway, text: str) -> None:
-    """Alerting is best-effort: a Slack outage is never allowed to undo
-    work (a draft, an escalation label, a monday.com item) that already
-    succeeded. Logged, not raised."""
-    try:
-        slack_gateway.send_alert(text)
-    except Exception as exc:
-        logger.warning("Slack alert failed to send: %s", exc)

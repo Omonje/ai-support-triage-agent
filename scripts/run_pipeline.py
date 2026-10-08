@@ -12,7 +12,7 @@ from app.gateways.gmail_auth import build_gmail_service
 from app.gateways.gmail_gateway import GmailGateway
 from app.gateways.knowledge_base_repo import load_articles
 from app.gateways.monday_gateway import MondayGateway
-from app.gateways.slack_gateway import SlackGateway
+from app.gateways.slack_gateway import SlackGateway, send_alert_best_effort
 from app.logging_setup import configure_logging, get_logger
 from app.service.pipeline import process_new_messages
 
@@ -60,23 +60,31 @@ def main() -> None:
         logger.error("Startup config check failed: %s", exc.message)
         raise
 
-    llm_gateway = _build_llm_gateway(settings)
-    print(f"Using LLM provider: {settings.llm_provider}")
-
-    gmail_service = build_gmail_service(settings.gmail_oauth_client_path, settings.gmail_token_cache_path)
-    gmail_gateway = GmailGateway(
-        gmail_service,
-        label=settings.gmail_label,
-        processed_label=settings.gmail_processed_label,
-        escalation_label=settings.gmail_escalation_label,
-    )
-
-    monday_gateway = MondayGateway(api_token=settings.monday_api_token, board_id=settings.monday_board_id)
-    kb_articles = load_articles()
-
     slack_gateway = SlackGateway(webhook_url=settings.slack_webhook_url) if settings.slack_webhook_url else None
     if slack_gateway is None:
         print("SLACK_WEBHOOK_URL not set, running without Slack alerts.")
+
+    try:
+        llm_gateway = _build_llm_gateway(settings)
+        print(f"Using LLM provider: {settings.llm_provider}")
+
+        gmail_service = build_gmail_service(settings.gmail_oauth_client_path, settings.gmail_token_cache_path)
+        gmail_gateway = GmailGateway(
+            gmail_service,
+            label=settings.gmail_label,
+            processed_label=settings.gmail_processed_label,
+            escalation_label=settings.gmail_escalation_label,
+        )
+
+        monday_gateway = MondayGateway(api_token=settings.monday_api_token, board_id=settings.monday_board_id)
+        kb_articles = load_articles()
+    except Exception as exc:
+        logger.error("Pipeline startup failed, no messages were processed: %s", exc)
+        if slack_gateway is not None:
+            send_alert_best_effort(
+                slack_gateway, f"Pipeline startup failed, no messages were processed: {exc}"
+            )
+        raise
 
     results, failures = process_new_messages(
         gmail_gateway=gmail_gateway,

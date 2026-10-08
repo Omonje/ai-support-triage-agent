@@ -1,11 +1,15 @@
 """The only place that talks to Slack. A thin incoming-webhook wrapper,
 one method, post a plain text message. Alerting is one-way and
-best-effort: the pipeline never lets a Slack failure undo work that
-already succeeded (see pipeline.py), it only logs it."""
+best-effort: nothing that calls send_alert_best_effort ever lets a
+Slack failure undo work (a draft, an escalation label, a monday.com
+item, a successful pipeline startup) that already succeeded."""
 
 import requests
 
 from app.errors import GatewayError
+from app.logging_setup import get_logger
+
+logger = get_logger(__name__)
 
 
 class SlackGateway:
@@ -23,3 +27,12 @@ class SlackGateway:
             raise GatewayError(
                 "slack", f"Slack webhook returned {response.status_code}: {response.text}"
             )
+
+
+def send_alert_best_effort(slack_gateway, text: str) -> None:
+    """Logged, not raised: a Slack outage must never fail or mask the
+    real work that triggered the alert in the first place."""
+    try:
+        slack_gateway.send_alert(text)
+    except Exception as exc:
+        logger.warning("Slack alert failed to send: %s", exc)
