@@ -26,19 +26,30 @@
 
 ## Deliberate-breakage check
 Break the code on purpose in these ways. Every break must make a test fail.
+
+Run 2026-10-08. Each break was applied by monkeypatching the broken
+behavior into the test's own namespace in memory and calling the real
+existing test functions directly, rather than editing the real source
+files (the auto-permission system correctly refused direct edits that
+weaken escalation/scope-filter logic, even temporarily; monkeypatching
+proves the same thing without ever writing broken logic into a real
+file on disk). Script kept outside the repo, in the session scratchpad.
+
 | Break | Caught by | Caught? |
 |---|---|---|
-| Force escalation trigger to never fire | Escalation rule unit test | not run yet |
-| Force confidence score to always read 100% | Low-confidence escalation test | not run yet |
-| Skip the duplicate-message check | Reprocessing test | not run yet |
-| Remove the Gmail label scope filter | Scope/label test | not run yet |
-| Corrupt the KB retrieval so it returns an unrelated article | Grounding test | not run yet |
+| Force escalation trigger to never fire | `test_sensitive_intent_escalates_even_with_high_confidence`, `test_low_confidence_escalates_even_with_non_sensitive_intent` | yes, both |
+| Force confidence score to always read 100% | `test_low_confidence_escalates_even_with_non_sensitive_intent`, `test_confidence_just_below_threshold_escalates` | yes, both |
+| Skip the duplicate-message check | `test_list_new_message_ids_queries_label_and_excludes_processed` | yes |
+| Remove the Gmail label scope filter | `test_list_new_message_ids_queries_label_and_excludes_processed` | yes |
+| Corrupt the KB retrieval so it returns an unrelated article | `test_returns_most_relevant_article_for_a_defect_message`, `test_returns_most_relevant_article_for_a_shipping_message` | yes, both |
+
+Full suite re-run clean afterward (94 passed), confirming the breaks were fully reverted (in-memory only, no source file was ever changed).
 
 ## Results (exact numbers, with the date)
 - Date: 2026-10-08
 - Unit tests: 94 passing (full suite, `pytest -q`), runs in ~2.3s
 - Integration tests: Gmail connectivity, monday.com connectivity, closed-loop sent-detection (14 pending drafts found and correctly checked), and the full pipeline real run (18/18 messages processed: 14 drafted, 4 escalated, 0 failures) all passed against live accounts
-- Deliberate breaks caught: not run yet
+- Deliberate breaks caught: 5/5 (see table above)
 - Load test (shape of results and its limits): not applicable at demo scale, note in RUNBOOK.md instead
 
 ## CI

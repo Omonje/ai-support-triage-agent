@@ -31,8 +31,9 @@ customer, client, or personal data anywhere, every message is synthetic.
       approval step.
 - [ ] Audit log: every classification, draft, and approval/rejection is
       logged with a reason.
-- [ ] A mutation/deliberate-breakage check proves the test suite actually
+- [x] A mutation/deliberate-breakage check proves the test suite actually
       catches failures (same pattern used on an earlier MCP build).
+      Done 2026-10-08: 5/5 deliberate breaks caught, see TESTS.md.
 
 ## In scope (version 1)
 - Inbox/helpdesk integration (mocked inbox, realistic shape)
