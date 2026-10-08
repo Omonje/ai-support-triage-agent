@@ -31,6 +31,8 @@ jobs:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           MONDAY_API_TOKEN: ${{ secrets.MONDAY_API_TOKEN }}
           MONDAY_BOARD_ID: ${{ secrets.MONDAY_BOARD_ID }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           CONFIDENCE_ESCALATION_THRESHOLD: ${{ secrets.CONFIDENCE_ESCALATION_THRESHOLD }}
           GMAIL_LABEL: Triage-Demo
@@ -41,6 +43,8 @@ jobs:
         env:
           MONDAY_API_TOKEN: ${{ secrets.MONDAY_API_TOKEN }}
           MONDAY_BOARD_ID: ${{ secrets.MONDAY_BOARD_ID }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           LLM_PROVIDER: ${{ secrets.LLM_PROVIDER }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           GMAIL_LABEL: Triage-Demo

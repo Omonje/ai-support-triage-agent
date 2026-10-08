@@ -10,9 +10,9 @@ from app.config import load_settings
 from app.errors import ConfigError
 from app.gateways.gmail_auth import build_gmail_service
 from app.gateways.gmail_gateway import GmailGateway
-from app.gateways.knowledge_base_repo import load_articles
 from app.gateways.monday_gateway import MondayGateway
 from app.gateways.slack_gateway import SlackGateway, send_alert_best_effort
+from app.gateways.supabase_kb_repo import SupabaseKBRepo
 from app.logging_setup import configure_logging, get_logger
 from app.service.pipeline import process_new_messages
 
@@ -77,7 +77,9 @@ def main() -> None:
         )
 
         monday_gateway = MondayGateway(api_token=settings.monday_api_token, board_id=settings.monday_board_id)
-        kb_articles = load_articles()
+        kb_articles = SupabaseKBRepo(
+            url=settings.supabase_url, service_key=settings.supabase_service_key
+        ).load_articles()
     except Exception as exc:
         logger.error("Pipeline startup failed, no messages were processed: %s", exc)
         if slack_gateway is not None:

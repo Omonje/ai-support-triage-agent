@@ -69,6 +69,18 @@ def test_fails_fast_when_a_required_var_is_missing(required_env, monkeypatch):
         load_settings(env_file=None)
 
 
+def test_fails_fast_when_supabase_url_is_missing(required_env, monkeypatch):
+    monkeypatch.delenv("SUPABASE_URL")
+    with pytest.raises(ConfigError, match="SUPABASE_URL"):
+        load_settings(env_file=None)
+
+
+def test_loads_supabase_settings(required_env):
+    settings = load_settings(env_file=None)
+    assert settings.supabase_url == "https://test.supabase.co"
+    assert settings.supabase_service_key == "test-supabase-key"
+
+
 def test_fails_fast_on_out_of_range_threshold(required_env, monkeypatch):
     monkeypatch.setenv("CONFIDENCE_ESCALATION_THRESHOLD", "1.5")
     with pytest.raises(ConfigError, match="between 0 and 1"):

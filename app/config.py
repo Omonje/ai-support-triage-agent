@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 from app.errors import ConfigError
 
-_ALWAYS_REQUIRED = ["MONDAY_API_TOKEN", "MONDAY_BOARD_ID"]
+_ALWAYS_REQUIRED = ["MONDAY_API_TOKEN", "MONDAY_BOARD_ID", "SUPABASE_URL", "SUPABASE_SERVICE_KEY"]
 
 # Which env var each LLM provider needs. Only the active provider's key
 # is required, so swapping providers never needs both configured.
@@ -33,6 +33,8 @@ class Settings:
     gmail_escalation_label: str
     monday_api_token: str
     monday_board_id: str
+    supabase_url: str
+    supabase_service_key: str
     slack_webhook_url: str
     inbox_poll_interval_seconds: int
     sent_check_poll_interval_seconds: int
@@ -79,6 +81,8 @@ def load_settings(env_file: str | None = ".env") -> Settings:
         gmail_escalation_label=os.getenv("GMAIL_ESCALATION_LABEL", "Needs-Human"),
         monday_api_token=os.environ["MONDAY_API_TOKEN"],
         monday_board_id=os.environ["MONDAY_BOARD_ID"],
+        supabase_url=os.environ["SUPABASE_URL"],
+        supabase_service_key=os.environ["SUPABASE_SERVICE_KEY"],
         slack_webhook_url=os.getenv("SLACK_WEBHOOK_URL", ""),
         inbox_poll_interval_seconds=int(os.getenv("INBOX_POLL_INTERVAL_SECONDS", "120")),
         sent_check_poll_interval_seconds=int(
