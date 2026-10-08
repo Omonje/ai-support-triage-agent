@@ -10,8 +10,8 @@
         <mxCell id="gmail" value="Gmail&#xa;Triage-Demo label only" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="40" y="160" width="220" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="worker" value="Pipeline Worker (Python)&#xa;scripts/run_pipeline.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="470" y="160" width="220" height="70" as="geometry" />
+        <mxCell id="worker" value="Pipeline Worker (Python)&#xa;scripts/run_pipeline.py&#xa;GitHub Actions, scheduled every 30 min" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="450" y="150" width="260" height="90" as="geometry" />
         </mxCell>
         <mxCell id="llm" value="LLM Gateway&#xa;Claude / Gemini / Groq (swappable)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="900" y="160" width="240" height="70" as="geometry" />

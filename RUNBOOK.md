@@ -1,6 +1,34 @@
 # Runbook
 
-## How to run it
+## Where it actually runs
+This isn't just a script on a laptop. It's deployed to GitHub Actions
+at [github.com/Omonje/ai-support-triage-agent](https://github.com/Omonje/ai-support-triage-agent)
+(private repo): `.github/workflows/run_pipeline.yml` runs the real
+pipeline against the live Gmail, monday.com, and Groq accounts every
+30 minutes, plus on manual trigger, using GitHub's encrypted repo
+secrets, no `.env` file or local machine involved. A second workflow,
+`tests.yml`, runs the full test suite on every push. Everything below
+in "How to run it" is how to run it **locally**, for development or a
+one-off manual check, separate from the deployed, scheduled copy.
+
+## Weekly maintenance: Gmail re-consent
+`gmail.modify` is a Restricted OAuth scope. While this app stays in
+Testing publishing status (the realistic choice for a portfolio build,
+production use needs an annual paid third-party security audit), the
+cached refresh token Google issues expires roughly every 7 days. When
+it does, the scheduled GitHub Actions run will fail at the Gmail-auth
+step and (if `SLACK_WEBHOOK_URL` is set) post a Slack alert saying
+startup failed. To fix it:
+1. Locally: delete `gmail_token.json`, run
+   `python -m scripts.check_gmail_connection` to go through the
+   interactive consent flow again (opens a browser), which writes a
+   fresh `gmail_token.json`.
+2. `gh secret set GMAIL_TOKEN_JSON --repo Omonje/ai-support-triage-agent < gmail_token.json`
+   to push the new token to GitHub.
+3. Re-run the workflow (`gh workflow run run_pipeline.yml --repo Omonje/ai-support-triage-agent`)
+   to confirm it's working again.
+
+## How to run it (locally)
 1. `python -m venv .venv` then activate it, `pip install -r requirements.txt`.
 2. Copy `.env.example` to `.env` and fill in:
    - `LLM_PROVIDER` (`claude`, `gemini`, or `groq`) and the matching API key.
@@ -31,25 +59,33 @@
    monday.com item to "Sent" once its Gmail draft has actually been
    sent by a human.
 
-In a real deployment, steps 5 and 6 would run on a schedule
-(`INBOX_POLL_INTERVAL_SECONDS` / `SENT_CHECK_POLL_INTERVAL_SECONDS` in
-`.env` already define the intended cadence), not by hand. For this
-portfolio build they're run manually, which is the honest limit stated
-in PLAN.md.
+Steps 5 and 6 above describe running it by hand locally. The deployed
+copy already runs steps 5 and 6 on its own schedule (every 30 minutes,
+see "Where it actually runs"), closer to the cadence
+`INBOX_POLL_INTERVAL_SECONDS` / `SENT_CHECK_POLL_INTERVAL_SECONDS` in
+`.env.example` originally described as the intent, though not exactly
+that interval (GitHub Actions' minimum practical granularity and free-
+tier usage limits make 30 minutes the sensible cadence here, not 2 and
+5 minutes).
 
 ## Release steps
 1. `pytest -q` — full suite must pass (107 tests as of 2026-10-08).
+   The same suite also runs automatically in CI on every push.
 2. Run the two connectivity checks (step 3 above) against the real
-   accounts.
-3. Run `scripts.run_pipeline`, read its per-message output for any
-   `[FAILED]` lines before considering the run complete.
+   accounts, locally, if testing a change before pushing.
+3. Push to `main`. The test workflow runs automatically; the pipeline
+   workflow picks up the new code on its next scheduled run, or
+   trigger it immediately with
+   `gh workflow run run_pipeline.yml --repo Omonje/ai-support-triage-agent`.
+4. Check the run's output (`gh run view --repo Omonje/ai-support-triage-agent --log`,
+   or the Actions tab in the browser) for any `[FAILED]` lines before
+   considering the release complete.
 
 ## The way back
-There's no deployed service to roll back, this runs on demand from a
-local machine. If a bad change needs undoing: `git revert` the commit,
-`pip install -r requirements.txt` again if a dependency changed, re-run
-the release steps above. No external state needs manual undoing, since
-the pipeline only ever creates Gmail drafts (never sends) and
+`git revert` the commit on `main` and push. The next scheduled run (or
+a manual `gh workflow run`) picks up the reverted code automatically,
+nothing to redeploy by hand. No external state needs undoing either
+way: the pipeline only ever creates Gmail drafts (never sends) and
 monday.com items (never deletes), and failed messages are simply
 retried on the next run rather than left half-applied.
 
@@ -103,7 +139,8 @@ retried on the next run rather than left half-applied.
 
 | Number or check | Alert when | Who is told, and how |
 |---|---|---|
-| The scheduled run itself not firing | No run has completed in longer than the expected poll interval | Needs an external scheduler/uptime check (e.g. a cron health-check ping), not built here since this demo runs on demand, not on a schedule |
+| The scheduled run itself not firing | No run has completed in longer than ~30 minutes | GitHub itself emails repo admins when a scheduled workflow run fails, and the Actions tab shows run history directly; no separate uptime check is built on top of that |
+| Gmail token expiring (Restricted-scope 7-day limit) | The scheduled run's Gmail-auth step fails | Now alerts via Slack immediately (the startup-failure alert added alongside this), instead of the workflow silently going quiet; see "Weekly maintenance" above for the fix |
 | LLM provider errors (quota/5xx) | Repeated `GATEWAY_ERROR` for the same provider across runs | Already alerted per-run via the Slack failure summary above; a real deployment on a paid LLM tier wouldn't hit the free-tier daily caps this demo hit twice (LOG.md) |
 | monday.com item count vs. Gmail processed count | They disagree (a message was processed but never got a monday.com row, or vice versa) | Manual reconciliation for now; `scripts/check_monday_connection.py`'s pattern could be extended into a dedicated audit script |
 | `pipeline.log` growth | File size becomes unmanageable | No rotation is built in; a real deployment would use a log aggregator (e.g. CloudWatch, Datadog) instead of a flat file |

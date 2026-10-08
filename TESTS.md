@@ -58,7 +58,14 @@ Full suite re-run clean afterward (94 passed), confirming the breaks were fully 
 - Load test (shape of results and its limits): not applicable at demo scale, note in RUNBOOK.md instead
 
 ## CI
-Has the CI file actually run? not set up yet.
+Set up 2026-10-08: `.github/workflows/tests.yml` runs the full suite
+on every push/PR. First run failed (`pytest: command not found`,
+exit 127, the workflow installed `requirements.txt` instead of
+`requirements-dev.txt`, see LOG.md), fixed and confirmed passing
+(44s) at https://github.com/Omonje/ai-support-triage-agent/actions.
+A second workflow, `run_pipeline.yml`, runs the real pipeline on a
+schedule (every 30 min) plus manual dispatch against the live
+accounts, verified with a real manual trigger the same day.
 
 ## Test walkthrough video
 Path:

@@ -141,6 +141,24 @@ type summarizing every failed message at the end of a run, and
 `run_pipeline.py` now writes durable, timestamped log lines to
 `pipeline.log`. 2 more tests, 107 total unit tests passing.
 
+## Addendum (2026-10-08): deployment off the local machine
+The user wanted this to run live somewhere, not only when she runs a
+script on her laptop, so it genuinely demonstrates what a client
+deployment would look like. Pushed to a private GitHub repo
+(`github.com/Omonje/ai-support-triage-agent`) with two workflows
+(DECISIONS.md #10): a scheduled run (every 30 min + manual dispatch)
+that executes the real pipeline against the live accounts using
+GitHub's encrypted repo secrets, and a test workflow that runs the
+full suite on every push, closing the "CI not set up yet" line in
+TESTS.md. Verified for real: a manual trigger authenticated to Gmail,
+Groq, and monday.com entirely from GitHub's own cloud runners, no
+connection to the local machine. One real constraint surfaced and
+documented, not hidden: `gmail.modify` is a Restricted OAuth scope, so
+the cached token needs re-consent roughly every 7 days while the app
+stays in Testing publishing status (the only realistic option short of
+an annual paid security audit); a startup failure now alerts via
+Slack instead of silently going quiet.
+
 ## Gate log
 - Gate 1 approved: 2026-10-02
 - Gate 2 approved:

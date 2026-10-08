@@ -37,7 +37,10 @@ without touching any code, not buried in logs.
 The system plugs into real Gmail and real monday.com accounts (not
 local mocks), and it's built to swap the AI model behind it without
 touching any of that decision logic, so it isn't locked to one AI
-vendor.
+vendor. It's also deployed, not just runnable: it executes on its own
+schedule from GitHub Actions against the live accounts, with its own
+automated test suite running on every change, not a script someone
+has to remember to run from a laptop.
 
 ## What happened when it actually ran
 
@@ -68,8 +71,14 @@ does the team know when something needs their attention," also turned
 up a real gap: nothing had been pushing a notification at all, closed
 the same way, test-first, with a Slack alert for escalations, drafts,
 and run failures alike, plus a durable log file for anyone checking
-after the fact. Nothing about this build was a clean, first-try demo,
-and that's worth saying plainly rather than hiding.
+after the fact. Moving it off a laptop and onto a real schedule turned
+up one more: Google classifies the Gmail permission this system needs
+(read, label, and draft) as a Restricted scope, which caps how long an
+unverified app's access lasts before it needs a quick manual renewal,
+a real constraint of working with Gmail's API that's documented
+plainly rather than glossed over, with an alert now in place so it's
+never a silent failure. Nothing about this build was a clean,
+first-try demo, and that's worth saying plainly rather than hiding.
 
 What this isn't: a live deployment handling real customer data. The
 manufacturer, its support team, and every message are invented for this
