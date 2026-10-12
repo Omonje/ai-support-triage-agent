@@ -166,4 +166,12 @@ support line, questions about the build go through Upwork/the
 portfolio listing this is attached to.
 
 ## Live walkthrough video
-Path: <to be added after recording>
+Recorded 2026-10-12: `walkthrough-video.mp4` in the project root
+(gitignored, not in the repo itself, video files don't belong in git
+history). Shows a real, previously-unseen round trip: two fresh test
+messages sent into the Triage-Demo inbox, the GitHub Actions workflow
+triggered live, the Slack alerts landing, both monday.com rows
+appearing, the grounded draft reply, sending it, and the board
+flipping that row to "Sent" on its own. Not yet uploaded anywhere
+shareable, upload to Loom or an unlisted YouTube video before linking
+it from the actual Upwork portfolio listing.

@@ -70,4 +70,15 @@ schedule (every 30 min) plus manual dispatch against the live
 accounts, verified with a real manual trigger the same day.
 
 ## Test walkthrough video
-Path:
+Path: `walkthrough-video.mp4` in the project root (see RUNBOOK.md for
+what it covers). Recorded 2026-10-12 against two genuinely new test
+messages, not a replay of the original 18-message seed set.
+
+Real result, confirmed from the GitHub Actions run logs (not just the
+recording): the 09:06 UTC manual trigger processed both new messages
+correctly, "Bracket arrived damaged" escalated with zero AI draft
+generated (monday item 13263382930), "Order #5521 status" drafted and
+grounded (monday item 13263384398). That draft was sent live during
+recording, and the following run's closed-loop check (09:14 UTC)
+caught it and flipped the item to "Sent" automatically, no manual
+board update.

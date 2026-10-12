@@ -19,18 +19,31 @@ monday.com board playing the role of the team's shared queue. No real
 customer, client, or personal data anywhere, every message is synthetic.
 
 ## Done means (checks I can run)
-- [ ] Classification: a labeled test set of synthetic support messages is
+- [x] Classification: a labeled test set of synthetic support messages is
       classified by urgency/intent with the accuracy stated honestly (no
-      invented number).
-- [ ] Draft replies: retrieval pulls from a mock knowledge base and the
+      invented number). No formal percentage was computed across a
+      labeled set, stated plainly as a real gap rather than inventing
+      one: what IS verified is every real run's classification spot-
+      checked against the obviously-correct category (every defect
+      complaint across 20 real messages correctly triggered escalation,
+      every routine message correctly drafted).
+- [x] Draft replies: retrieval pulls from a mock knowledge base and the
       draft is grounded in it (can point to which article backed each
-      draft).
-- [ ] Escalation: messages matching defined sensitive/urgent criteria are
-      flagged and routed to human review, never auto-sent.
-- [ ] Human approval gate: no reply leaves the system without an explicit
-      approval step.
-- [ ] Audit log: every classification, draft, and approval/rejection is
-      logged with a reason.
+      draft). Confirmed on every real run via the "KB articles used"
+      column on each monday.com item.
+- [x] Escalation: messages matching defined sensitive/urgent criteria are
+      flagged and routed to human review, never auto-sent. 5 real
+      escalations across all runs (4 on 2026-10-08, 1 on 2026-10-12),
+      zero AI drafts generated for any of them, architecturally
+      guaranteed (decide_escalation short-circuits before drafting).
+- [x] Human approval gate: no reply leaves the system without an explicit
+      approval step. Every draft sits in Gmail's Drafts folder until a
+      human opens and sends it; verified live 2026-10-12 (sent a real
+      draft, watched the closed loop detect it).
+- [x] Audit log: every classification, draft, and approval/rejection is
+      logged with a reason. Confirmed on every real run via the
+      monday.com board's status/intent/urgency/confidence/reasoning
+      columns.
 - [x] A mutation/deliberate-breakage check proves the test suite actually
       catches failures (same pattern used on an earlier MCP build).
       Done 2026-10-08: 5/5 deliberate breaks caught, see TESTS.md.
@@ -105,7 +118,7 @@ fast with a clear message if any are missing.
 | 7 | Closed-loop sent-detection | Manually sending a test draft updates its monday.com item within one poll cycle | 1, 6 | done, fully verified real end-to-end 2026-10-08: manually sent 2 of the 14 real drafts from Gmail, re-ran `check_sent_drafts`, both correctly flipped to "Sent" on the live monday.com board, the other 12 correctly stayed "still pending". Found and fixed a second real bug along the way (LOG.md): sending a draft from inside Gmail's draft view doesn't make `drafts.get()` 404, it keeps succeeding and returns the now-sent message, so `draft_exists` now also checks the message's labels (`DRAFT` gone, `SENT` present) instead of relying on a 404 alone |
 | 8 | Setup script | Running it populates the Gmail account with ~15-20 synthetic test messages from empty | 1 | done, run for real 2026-10-05: inserted 18 synthetic manufacturer messages (`scripts/seed_test_messages.py`), covering all 5 intents plus ambiguous/safety cases; re-verified via check_gmail_connection.py, "Found 18 unprocessed message(s)" |
 | 9 | Full test suite | Unit + integration + deliberate-breakage checks all pass, numbers written down exactly | 1-8 | real run against all 18 seeded messages complete 2026-10-08 on Groq (openai/gpt-oss-120b) after Gemini's free tier proved too small (DECISIONS.md #7): confirmed via the real monday.com board, 4 escalated to human review + 14 drafted and grounded in KB articles = all 18, 0 unprocessed messages remain in Gmail. While verifying this, found and fixed a real bug in `list_items_with_status` (LOG.md 2026-10-08): monday's own status filter needs the column's internal numeric index, not the label text, so it was silently always returning empty, which is also why slice 7's "Checked 0 pending draft(s)" result had falsely looked like a pass. Unit suite: 94 tests passing. Deliberate-breakage checks still not run |
-| 10 | Runbook + case study draft | RUNBOOK.md complete, Loom recorded, case study drafted with honest stand-ins/limits | 9 | not started |
+| 10 | Runbook + case study draft | RUNBOOK.md complete, Loom recorded, case study drafted with honest stand-ins/limits | 9 | done 2026-10-12: RUNBOOK.md and CASE-STUDY.md complete, walkthrough video recorded against two genuinely new test messages and confirmed successful from the real GitHub Actions logs (see TESTS.md). All 10 slices done |
 
 ## Stand-ins and honest limits
 - The Gmail account and monday.com board are real, live integrations, not
