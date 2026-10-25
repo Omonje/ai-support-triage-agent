@@ -6,8 +6,12 @@ anything sensitive instead of guessing. Built as an independent portfolio
 piece, grounded in a real, live Upwork job spec (not built for that
 client, see `DECISIONS.md`).
 
-**Status:** in progress. See `PLAN.md` for scope, design, and the slice
-checklist, `TESTS.md` for the test plan and results once they exist.
+**Status:** complete. All 10 slices are done. See `PLAN.md` for scope and
+design, `TESTS.md` for the test results (116 unit tests passing, 18 of 18
+seeded messages processed in a real run), and `CASE-STUDY.md` for the
+write-up. The LLM layer is swappable between Claude, Gemini and Groq
+(`LLM_PROVIDER` in `.env`); the live run used Groq, see `DECISIONS.md` #6
+and #7.
 
 ## What this is, honestly
 
@@ -26,7 +30,8 @@ copy .env.example .env
 ```
 
 Then fill in `.env`:
-- `ANTHROPIC_API_KEY` from console.anthropic.com
+- `LLM_PROVIDER` (`claude`, `gemini` or `groq`) and the matching key:
+  `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY` or `GROQ_API_KEY`
 - `GMAIL_OAUTH_CLIENT_PATH` / Gmail OAuth: see `RUNBOOK.md` for the
   Google Cloud Console walkthrough
 - `MONDAY_API_TOKEN` / `MONDAY_BOARD_ID`: from your monday.com account's
