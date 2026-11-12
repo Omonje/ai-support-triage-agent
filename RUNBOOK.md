@@ -3,7 +3,7 @@
 ## Where it actually runs
 This isn't just a script on a laptop. It's deployed to GitHub Actions
 at [github.com/Omonje/ai-support-triage-agent](https://github.com/Omonje/ai-support-triage-agent)
-(private repo): `.github/workflows/run_pipeline.yml` runs the real
+(GitHub repo): `.github/workflows/run_pipeline.yml` runs the real
 pipeline against the live Gmail, monday.com, and Groq accounts every
 30 minutes, plus on manual trigger, using GitHub's encrypted repo
 secrets, no `.env` file or local machine involved. A second workflow,

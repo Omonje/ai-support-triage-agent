@@ -157,7 +157,7 @@ type summarizing every failed message at the end of a run, and
 ## Addendum (2026-10-08): deployment off the local machine
 The user wanted this to run live somewhere, not only when she runs a
 script on her laptop, so it genuinely demonstrates what a client
-deployment would look like. Pushed to a private GitHub repo
+deployment would look like. Pushed to a GitHub repo
 (`github.com/Omonje/ai-support-triage-agent`) with two workflows
 (DECISIONS.md #10): a scheduled run (every 30 min + manual dispatch)
 that executes the real pipeline against the live accounts using
